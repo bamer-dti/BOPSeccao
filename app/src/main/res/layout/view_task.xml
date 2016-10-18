@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llinha"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingBottom="8dp"
+    android:paddingTop="0dp">
+
+    Button
+        android:id="@+id/bt_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total" />
+
+    <TextView
+        android:id="@+id/tv_ref"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_weight="1"
+        android:singleLine="false"
+        android:text="ref"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="@color/md_grey_900" />
+
+    <LinearLayout
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_qtt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:singleLine="false"
+            android:text="qtt"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/md_grey_900"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_dim"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:singleLine="false"
+            android:text="dim"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/md_grey_900" />
+    </LinearLayout>
+
+    Button
+        android:id="@+id/bt_parcial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PARTE" />
+</LinearLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="tamanho_titulo_cartao">25sp</dimen>
+    <dimen name="margem_exterior_titulo_cartao">30sp</dimen>
+    <dimen name="margem_bottom_titulo_cartao">10sp</dimen>
+    <dimen name="margem_cartao_maquina">5sp</dimen>
+    <dimen name="tamanho_fonte_numero_inspeccao">120sp</dimen>
+    <dimen name="tamanho_fonte_numero_cartao_qtd">40sp</dimen>
+</resources>

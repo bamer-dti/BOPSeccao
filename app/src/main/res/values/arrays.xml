@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_estados">
+        <item>01 - CORTE</item>
+        <item>02 - TRANSFORMAÇÃO</item>
+    </string-array>
+
+    <string-array name="array_seccao">
+        <item>10 - ALUMINIOS</item>
+        <item>11 - AÇOS</item>
+        <item>12 - CARPINTARIA</item>
+        <item>15 - ARMAZEM</item>
+    </string-array>
+
+    <string-array name="array_funcionario">
+        <item>Func1</item>
+        <item>Funcionário 2</item>
+    </string-array>
+</resources>

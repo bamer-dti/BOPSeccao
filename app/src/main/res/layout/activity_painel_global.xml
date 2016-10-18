@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    xmlns:htext="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/pb_smooth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:spb_color="#FF0000"
+        app:spb_mirror_mode="false"
+        app:spb_progressiveStart_activated="true"
+        app:spb_progressiveStart_speed="1.5"
+        app:spb_progressiveStop_speed="3.4"
+        app:spb_reversed="false"
+        app:spb_sections_count="4"
+        app:spb_speed="2.0"
+        app:spb_stroke_separator_length="4dp"
+        app:spb_stroke_width="4dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_view_inspeccao"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/card_margin"
+                android:foreground="?android:attr/selectableItemBackground"
+                card_view:cardCornerRadius="@dimen/card_album_radius">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margem_bottom_titulo_cartao"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_prontas_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margem_bottom_titulo_cartao"
+                        android:layout_marginEnd="@dimen/margem_exterior_titulo_cartao"
+                        android:layout_marginStart="@dimen/margem_exterior_titulo_cartao"
+                        android:layout_marginTop="@dimen/margem_exterior_titulo_cartao"
+                        android:text="INSPECÇÃO"
+                        android:textSize="@dimen/tamanho_titulo_cartao"
+                        card_view:ignore="HardcodedText" />
+
+                    <com.hanks.htextview.HTextView
+                        android:id="@+id/htv_prontas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margem_exterior_titulo_cartao"
+                        android:layout_marginTop="@dimen/margem_bottom_titulo_cartao"
+                        android:background="@drawable/fundo_circular"
+                        android:gravity="center"
+                        android:textColor="@color/md_white_1000"
+                        android:textIsSelectable="false"
+                        android:textSize="@dimen/tamanho_fonte_numero_inspeccao"
+                        android:textStyle="bold"
+
+                        card_view:ignore="HardcodedText"
+                        htext:animateType="evaporate" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/ll_maquinas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <pt.bamer.bameropseccao.Cartao_Maquina
+                        android:id="@+id/cartao_maquina_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/margem_cartao_maquina"
+                        android:visibility="invisible" />
+                </LinearLayout>
+            </ScrollView>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/card_view_qtds"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/card_margin"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    card_view:cardCornerRadius="@dimen/card_album_radius">
+
+                    <TableLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_margin="@dimen/margem_bottom_titulo_cartao"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TableRow
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical">
+
+                            <LinearLayout
+                                android:id="@+id/ll_atrasado"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="@dimen/margem_exterior_titulo_cartao"
+                                    android:layout_marginStart="@dimen/margem_exterior_titulo_cartao"
+                                    android:text="ATRASADO"
+                                    android:textSize="@dimen/tamanho_titulo_cartao"
+                                    card_view:ignore="HardcodedText" />
+
+                                <com.hanks.htextview.HTextView
+                                    android:id="@+id/htv_qtt_antes"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="100dp"
+                                    android:background="#ffffff"
+                                    android:gravity="center"
+                                    android:textColor="@color/md_red_300"
+                                    android:textSize="@dimen/tamanho_fonte_numero_cartao_qtd"
+                                    android:textStyle="bold"
+                                    htext:animateType="line" />
+                            </LinearLayout>
+
+                            <pt.bamer.bameropseccao.charts.PieHoje
+                                android:id="@+id/pie_hoje"
+                                android:layout_width="300sp"
+                                android:layout_height="300sp" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="@dimen/margem_exterior_titulo_cartao"
+                                    android:layout_marginStart="@dimen/margem_exterior_titulo_cartao"
+                                    android:text="AMANHÃ"
+                                    android:textSize="@dimen/tamanho_titulo_cartao"
+                                    card_view:ignore="HardcodedText" />
+
+                                <com.hanks.htextview.HTextView
+                                    android:id="@+id/htv_qtt_amanha"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="100dp"
+                                    android:background="#ffffff"
+                                    android:gravity="center"
+                                    android:textColor="@color/md_blue_A400"
+                                    android:textSize="@dimen/tamanho_fonte_numero_cartao_qtd"
+                                    android:textStyle="bold"
+                                    htext:animateType="line" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="@dimen/margem_exterior_titulo_cartao"
+                                    android:layout_marginStart="@dimen/margem_exterior_titulo_cartao"
+                                    android:text="FUTURO"
+                                    android:textSize="@dimen/tamanho_titulo_cartao"
+                                    card_view:ignore="HardcodedText" />
+
+                                <com.hanks.htextview.HTextView
+                                    android:id="@+id/htv_qtt_futuro"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="100dp"
+                                    android:background="#ffffff"
+                                    android:gravity="center"
+                                    android:textColor="@color/md_yellow_800"
+                                    android:textSize="@dimen/tamanho_fonte_numero_cartao_qtd"
+                                    android:textStyle="bold"
+                                    htext:animateType="line" />
+                            </LinearLayout>
+
+
+                        </TableRow>
+
+                    </TableLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="COMANDOS"
+                        card_view:ignore="HardcodedText" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_os"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:divider="@color/md_grey_900"
+                android:dividerHeight="1px" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

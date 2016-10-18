@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "85961558363",
+    "firebase_url": "https://bamer-os-section.firebaseio.com",
+    "project_id": "bamer-os-section",
+    "storage_bucket": "bamer-os-section.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:85961558363:android:ec755fcd7fbcc315",
+        "android_client_info": {
+          "package_name": "pt.bamer.bameropseccao"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "85961558363-308qfocmr6if41iuqgcq37u8gmipbdvm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBs2ygYTjnaQM-xf_yyGyqgea5bue4dyV8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

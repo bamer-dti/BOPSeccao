@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bamer OS Buffer</string>
+    <string name="seccao">Secção</string>
+    <string name="maquina">Máquina</string>
+    <string name="funcionario">Funcionário</string>
+    <string name="ok">OK</string>
+    <string name="estado">Estado</string>
+    <string name="aguarde">aguarde…</string>
+    <string name="reticencias">…</string>
+    <string name="eliminar_db">Eliminar DataBase</string>
+</resources>

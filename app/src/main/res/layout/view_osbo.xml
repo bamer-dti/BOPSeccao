@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/llclick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/tv_fref"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/aguarde"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/md_blue_700" />
+
+            <TextView
+                android:id="@+id/tv_obrano"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/aguarde"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/md_light_green_800" />
+
+            <TextView
+                android:id="@+id/tv_descricao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/aguarde"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/md_grey_900" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            tools:ignore="NestedWeights">
+
+            <TableLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="0dp"
+                        android:text="CRT"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/md_grey_900"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/tv_dtcortef"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/aguarde"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/md_grey_900" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="0dp"
+                        android:text="TRF"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/md_grey_900"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/tv_dttransf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/aguarde"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/md_grey_900" />
+                </TableRow>
+
+            </TableLayout>
+
+            <TextView
+                android:id="@+id/tv_qtt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                android:padding="5dp"
+                android:text="@string/aguarde"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/md_grey_900" />
+
+            <TextView
+                android:id="@+id/tv_qttfeita"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="fill_vertical|end"
+                android:padding="10dp"
+                android:text="@string/aguarde"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/md_blue_800" />
+
+            <TextView
+                android:id="@+id/tv_temporal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                android:text="@string/aguarde"
+                android:textColor="@color/md_purple_600" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_gravity="bottom"
+        android:background="@android:color/darker_gray"
+        android:paddingBottom="3dp"
+        android:paddingTop="1dp" />
+
+</LinearLayout>
