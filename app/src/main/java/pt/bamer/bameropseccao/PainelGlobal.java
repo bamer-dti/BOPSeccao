@@ -2,11 +2,13 @@ package pt.bamer.bameropseccao;
 
 import android.annotation.SuppressLint;
 import android.content.IntentFilter;
+import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import pt.bamer.bameropseccao.adapters.AdapterOS;
 import pt.bamer.bameropseccao.charts.PieHoje;
 import pt.bamer.bameropseccao.objectos.OSBI;
 import pt.bamer.bameropseccao.objectos.OSBO;
@@ -38,7 +41,7 @@ public class PainelGlobal extends AppCompatActivity {
     private static final String TAG = "LOG" + PainelGlobal.class.getSimpleName();
     private static final String NODE_OSBO = "osbo";
     private static final String NODE_OSBI = "osbi03";
-    private PainelGlobal activity = this;
+    private static final String NODE_OSPROD = "osprod";
     private SmoothProgressBar pb_smooth;
     private IntentFilter filter;
     private RecyclerView recycler_os;
@@ -52,6 +55,7 @@ public class PainelGlobal extends AppCompatActivity {
     private int qttParaInspecaoEmAberto;
     private ValueEventListener listenerFirebase;
     private DatabaseReference ref;
+    private AdapterOS adapterOS;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -75,6 +79,7 @@ public class PainelGlobal extends AppCompatActivity {
         });
 
         htv_inspeccao_numero = (HTextView) findViewById(R.id.htv_prontas);
+        htv_inspeccao_numero.animateText("0");
 
         ll_maquinas = (LinearLayout) findViewById(R.id.ll_maquinas);
 
@@ -82,6 +87,10 @@ public class PainelGlobal extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recycler_os.setLayoutManager(linearLayoutManager);
+        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
+        itemAnimator.setAddDuration(250);
+        itemAnimator.setRemoveDuration(250);
+        recycler_os.setItemAnimator(itemAnimator);
 
         htv_qtt_futuro = (HTextView) findViewById(R.id.htv_qtt_futuro);
         htv_qtt_amanha = (HTextView) findViewById(R.id.htv_qtt_amanha);
@@ -103,27 +112,30 @@ public class PainelGlobal extends AppCompatActivity {
             }
         };
 
-
+        adapterOS = new AdapterOS(this);
+        recycler_os.setAdapter(adapterOS);
+        ref.addValueEventListener(listenerFirebase);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "onStart()");
+//        pb_smooth.setVisibility(View.VISIBLE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume()");
-        ref.addValueEventListener(listenerFirebase);
+//        ref.addValueEventListener(listenerFirebase);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause()");
-        ref.removeEventListener(listenerFirebase);
+//        ref.removeEventListener(listenerFirebase);
         pararCronometrosMyTimerActivity();
     }
 
@@ -153,19 +165,30 @@ public class PainelGlobal extends AppCompatActivity {
 
     }
 
-
     private class TaskFirebase extends AsyncTask<Void, Void, Void> {
         private final ArrayList<OSBO> listaOSBO;
         private final ArrayList<OSBI> listaOSBI;
         private final ArrayList<OSPROD> listaOSPROD;
         private final DataSnapshot dataSnapShot;
+        private final ArrayList<OSBO> listaInspeccao;
+        private int totalAtrasado = 0;
+        private int totalHoje = 0;
+        private int totalAmanha = 0;
+        private int totalFuturo = 0;
+        private int totalProduzido = 0;
 
         public TaskFirebase(DataSnapshot dataSnapshot) {
-            this.listaOSBO = new ArrayList<OSBO>();
-            this.listaOSBI = new ArrayList<OSBI>();
-            this.listaOSPROD = new ArrayList<OSPROD>();
+            this.listaOSBO = new ArrayList<>();
+            this.listaOSBI = new ArrayList<>();
+            this.listaOSPROD = new ArrayList<>();
+            this.listaInspeccao = new ArrayList<>();
             this.dataSnapShot = dataSnapshot;
+        }
+
+        @Override
+        protected void onPreExecute() {
             pb_smooth.setVisibility(View.VISIBLE);
+            Log.i(TAG, "Secção " + MrApp.getSeccao() + ", estado " + MrApp.getEstado());
         }
 
         @Override
@@ -177,7 +200,8 @@ public class PainelGlobal extends AppCompatActivity {
                         String bostamp = snapshotOSBO.getKey();
                         OSBO osbo = snapshotOSBO.getValue(OSBO.class);
                         osbo.bostamp = bostamp;
-                        if (osbo.seccao.equals(MrApp.getSeccao())) {
+                        if (osbo.seccao.equals(MrApp.getSeccao())
+                                && osbo.estado.equals(MrApp.getEstado())) {
                             listaOSBO.add(osbo);
                         }
                     }
@@ -193,13 +217,129 @@ public class PainelGlobal extends AppCompatActivity {
                         }
                     }
                 }
+
+                if (snap.getKey().equals(NODE_OSPROD)) {
+                    for (DataSnapshot snapshotOSPROD : snap.getChildren()) {
+                        String bostamp = snapshotOSPROD.getKey();
+                        for (DataSnapshot dataSnapshotOSBI : snapshotOSPROD.getChildren()) {
+                            OSPROD osprod = dataSnapshotOSBI.getValue(OSPROD.class);
+                            osprod.bostamp = bostamp;
+                            listaOSPROD.add(osprod);
+                        }
+                    }
+                }
             }
-            Log.i(TAG, "listaOSBO: " + listaOSBO.size() + ", listaOSBI: " + listaOSBI.size());
+            Log.i(TAG, "listaOSBO: " + listaOSBO.size() + ", listaOSBI: " + listaOSBI.size() + ", lista OSPROD: " + listaOSPROD.size());
+
+            for (OSBO osbo : listaOSBO) {
+                String bostamp = osbo.bostamp;
+                DateTime dataHoje = DateTime.now().withTimeAtStartOfDay();
+                DateTime dataAmanha = dataHoje.plusDays(1);
+                DateTime dataOSBO = Funcoes.cToT(osbo.dtcortef).toDateTime();
+                int parcialAtrasado = 0;
+                int parcialHoje = 0;
+                int parcialAmanha = 0;
+                int parcialFuturo = 0;
+                int parcialProduzido = 0;
+
+                //QTDS:
+                for (OSBI osbi : listaOSBI) {
+                    if (osbi.bostamp.equals(bostamp)) {
+                        if (dataOSBO.isBefore(dataHoje)) {
+                            parcialAtrasado += osbi.qtt;
+                            totalAtrasado += osbi.qtt;
+                        }
+                        if (dataOSBO.isEqual(dataHoje)) {
+                            parcialHoje += osbi.qtt;
+                            totalHoje += osbi.qtt;
+                        }
+                        if (dataOSBO.isEqual(dataAmanha)) {
+                            parcialAmanha += osbi.qtt;
+                            totalAmanha += osbi.qtt;
+                        }
+                        if (dataOSBO.isAfter(dataAmanha)) {
+                            parcialFuturo += osbi.qtt;
+                            totalFuturo += osbi.qtt;
+                        }
+                    }
+                }
+
+                //PRODUZIDO:
+                for (OSPROD osprod : listaOSPROD) {
+                    if (dataOSBO.equals(dataHoje)) {
+
+                        if (osprod.bostamp.equals(bostamp)) {
+                            parcialProduzido += osprod.qtt;
+                            totalProduzido += osprod.qtt;
+                            Log.e(TAG, "OSPRO bostamp = " + osprod.bostamp + ": " + totalProduzido + "/" + osprod.qtt);
+                        }
+                    }
+                }
+                Log.d(TAG, "Painel: " + bostamp + ", " + dataHoje + ", " + dataOSBO
+                        + ": atrasado = " + parcialAtrasado + "/" + totalAtrasado
+                        + ": hoje = " + parcialHoje + "/" + totalHoje
+                        + ": amanha = " + parcialAmanha + "/" + totalAmanha
+                        + ": futuro = " + parcialFuturo + "/" + totalFuturo
+                );
+
+                int pedido = parcialAtrasado + parcialHoje + parcialAmanha + parcialFuturo;
+
+
+                //Prontos para inspecção!
+                if (parcialProduzido >= pedido) {
+                    listaInspeccao.add(osbo);
+                }
+            }
+            Log.i(TAG, MrApp.getSeccao() + ": Painel: atrasado: " + totalAtrasado + ", hoje = " + totalHoje + ", amanhã = " + totalAmanha + ", futuro = " + totalFuturo);
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String textoAntes = htv_qtt_antes.getText().toString();
+                    String textoNovo = "" + totalAtrasado;
+                    if (!textoAntes.equals(textoNovo))
+                        htv_qtt_antes.animateText("" + totalAtrasado);
+
+                    textoAntes = htv_qtt_amanha.getText().toString();
+                    textoNovo = "" + totalAmanha;
+                    if (!textoAntes.equals(textoNovo))
+                        htv_qtt_amanha.animateText(textoNovo);
+
+                    textoAntes = htv_qtt_futuro.getText().toString();
+                    textoNovo = "" + totalFuturo;
+                    if (!textoAntes.equals(textoNovo))
+                        htv_qtt_futuro.animateText(textoNovo);
+
+                    pieQtdsHoje.setData(totalProduzido, totalHoje);
+                }
+            });
+
+            //INSPECÇÃO:
+            int insAntes = 0;
+            try {
+                insAntes = Integer.parseInt(htv_inspeccao_numero.getText().toString());
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            final int intNovo = listaInspeccao.size();
+            if (intNovo > insAntes) {
+                new Funcoes.Beep(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 200).execute();
+            }
+            if (insAntes != intNovo) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        htv_inspeccao_numero.animateText(intNovo + "");
+                    }
+                });
+            }
+            adapterOS.updateSourceData(listaOSBO, listaOSBI, listaOSPROD);
+
             pb_smooth.setVisibility(View.INVISIBLE);
         }
     }

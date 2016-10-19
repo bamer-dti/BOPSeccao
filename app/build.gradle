@@ -71,6 +71,9 @@ dependencies {
     compile 'hanks.xyz:htextview-library:0.1.5'
 
     compile 'com.google.firebase:firebase-database:9.0.2'
+
+//    https://github.com/google/guava
+    compile 'com.google.guava:guava:19.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

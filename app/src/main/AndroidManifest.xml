@@ -16,7 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PainelGlobal"/>
+        <activity android:name=".PainelGlobal" />
+        <activity android:name=".Dossier" />
     </application>
 
 </manifest>
