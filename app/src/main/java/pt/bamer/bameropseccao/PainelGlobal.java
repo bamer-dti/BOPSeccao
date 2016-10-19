@@ -266,13 +266,10 @@ public class PainelGlobal extends AppCompatActivity {
 
                 //PRODUZIDO:
                 for (OSPROD osprod : listaOSPROD) {
-                    if (dataOSBO.equals(dataHoje)) {
-
-                        if (osprod.bostamp.equals(bostamp)) {
-                            parcialProduzido += osprod.qtt;
-                            totalProduzido += osprod.qtt;
-                            Log.e(TAG, "OSPRO bostamp = " + osprod.bostamp + ": " + totalProduzido + "/" + osprod.qtt);
-                        }
+                    if (osprod.bostamp.equals(bostamp)) {
+                        parcialProduzido += osprod.qtt;
+                        totalProduzido += osprod.qtt;
+                        Log.e(TAG, "OSPRO bostamp = " + osprod.bostamp + ": " + totalProduzido + "/" + osprod.qtt);
                     }
                 }
                 Log.d(TAG, "Painel: " + bostamp + ", " + dataHoje + ", " + dataOSBO
@@ -327,6 +324,7 @@ public class PainelGlobal extends AppCompatActivity {
                 e.printStackTrace();
             }
             final int intNovo = listaInspeccao.size();
+            Log.i(TAG, "LISTA INSPECÇÃO TEM " + intNovo + " REGISTOS!");
             if (intNovo > insAntes) {
                 new Funcoes.Beep(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 200).execute();
             }
