@@ -11,9 +11,6 @@ import java.util.ArrayList;
 
 import pt.bamer.bameropseccao.objectos.OSBI;
 
-/**
- * Created by miguel.silva on 19-10-2016.
- */
 public class dbHelper extends SQLiteOpenHelper {
     private static final String TAG = dbHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "opsec";

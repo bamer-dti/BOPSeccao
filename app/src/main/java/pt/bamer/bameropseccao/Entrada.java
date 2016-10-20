@@ -21,7 +21,6 @@ import pt.bamer.bameropseccao.utils.ValoresDefeito;
 public class Entrada extends AppCompatActivity {
 
     private static final String TAG = Entrada.class.getSimpleName();
-    private SmoothProgressBar pb_smooth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,7 +83,7 @@ public class Entrada extends AppCompatActivity {
             }
         });
 
-        pb_smooth = (SmoothProgressBar) findViewById(R.id.pb_smooth);
+        SmoothProgressBar pb_smooth = (SmoothProgressBar) findViewById(R.id.pb_smooth);
         pb_smooth.setVisibility(View.INVISIBLE);
     }
 

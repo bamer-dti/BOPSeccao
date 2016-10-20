@@ -221,9 +221,10 @@ public class PainelGlobal extends AppCompatActivity {
                 if (snap.getKey().equals(NODE_OSPROD)) {
                     for (DataSnapshot snapshotOSPROD : snap.getChildren()) {
                         String bostamp = snapshotOSPROD.getKey();
-                        for (DataSnapshot dataSnapshotOSBI : snapshotOSPROD.getChildren()) {
-                            OSPROD osprod = dataSnapshotOSBI.getValue(OSPROD.class);
+                        for (DataSnapshot dataSnapshotOSPROD : snapshotOSPROD.getChildren()) {
+                            OSPROD osprod = dataSnapshotOSPROD.getValue(OSPROD.class);
                             osprod.bostamp = bostamp;
+                            osprod.bistamp = dataSnapshotOSPROD.getKey();
                             listaOSPROD.add(osprod);
                         }
                     }
