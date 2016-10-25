@@ -1,7 +1,6 @@
 package pt.bamer.bameropseccao;
 
 import android.annotation.SuppressLint;
-import android.content.IntentFilter;
 import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -27,7 +25,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import pt.bamer.bameropseccao.adapters.AdapterOS;
@@ -43,18 +40,11 @@ public class PainelGlobal extends AppCompatActivity {
     private static final String NODE_OSBI = "osbi03";
     private static final String NODE_OSPROD = "osprod";
     private SmoothProgressBar pb_smooth;
-    private IntentFilter filter;
-    private RecyclerView recycler_os;
-    private LinearLayout ll_maquinas;
-    private List<TimerDePainelGlobal> listaDeTimers;
     private PieHoje pieQtdsHoje;
     private HTextView htv_qtt_antes;
     private HTextView htv_qtt_amanha;
     private HTextView htv_inspeccao_numero;
     private HTextView htv_qtt_futuro;
-    private int qttParaInspecaoEmAberto;
-    private ValueEventListener listenerFirebase;
-    private DatabaseReference ref;
     private AdapterOS adapterOS;
 
     @SuppressLint("SetTextI18n")
@@ -81,9 +71,7 @@ public class PainelGlobal extends AppCompatActivity {
         htv_inspeccao_numero = (HTextView) findViewById(R.id.htv_prontas);
         htv_inspeccao_numero.animateText("0");
 
-        ll_maquinas = (LinearLayout) findViewById(R.id.ll_maquinas);
-
-        recycler_os = (RecyclerView) findViewById(R.id.recycler_os);
+        RecyclerView recycler_os = (RecyclerView) findViewById(R.id.recycler_os);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recycler_os.setLayoutManager(linearLayoutManager);
@@ -99,8 +87,8 @@ public class PainelGlobal extends AppCompatActivity {
         pieQtdsHoje = (PieHoje) findViewById(R.id.pie_hoje);
 
         FirebaseDatabase databaseref = FirebaseDatabase.getInstance();
-        ref = databaseref.getReference();
-        listenerFirebase = new ValueEventListener() {
+        DatabaseReference ref = databaseref.getReference();
+        ValueEventListener listenerFirebase = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 new TaskFirebase(dataSnapshot).execute();
@@ -131,14 +119,6 @@ public class PainelGlobal extends AppCompatActivity {
 //        ref.addValueEventListener(listenerFirebase);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause()");
-//        ref.removeEventListener(listenerFirebase);
-        pararCronometrosMyTimerActivity();
-    }
-
     private void painelFuturo() {
         DateTime dateTime = new DateTime().withTimeAtStartOfDay();
         dateTime = dateTime.plusDays(2);
@@ -146,19 +126,6 @@ public class PainelGlobal extends AppCompatActivity {
         final String dataFuturoTxt = Funcoes.localDateTimeToStrFullaZeroHour(futuro);
 
 
-    }
-
-    private void pararCronometrosMyTimerActivity() {
-        if (listaDeTimers == null) {
-            return;
-        }
-        int i = 0;
-        for (TimerDePainelGlobal timerDePainelGlobal : listaDeTimers) {
-            i++;
-            timerDePainelGlobal.cancel();
-            timerDePainelGlobal.purge();
-        }
-        Log.i(TAG, "**Cancelados " + i + " cronometros TimerDePainelGlobal**");
     }
 
     public void addTimer(TimerDePainelGlobal timerDePainelGlobal) {
