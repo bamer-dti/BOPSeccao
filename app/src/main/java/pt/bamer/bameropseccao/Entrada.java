@@ -8,12 +8,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import pt.bamer.bameropseccao.objectos.Machina;
 import pt.bamer.bameropseccao.utils.Constantes;
 import pt.bamer.bameropseccao.utils.ValoresDefeito;
 
@@ -27,14 +36,48 @@ public class Entrada extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrada);
 
-        Spinner spinn_seccao = (Spinner) findViewById(R.id.spinn_seccao);
+        final Spinner spinn_seccao = (Spinner) findViewById(R.id.spinn_seccao);
         final SharedPreferences prefs = MrApp.getPrefs();
-        final String seccao = prefs.getString(Constantes.PREF_SECCAO, ValoresDefeito.SECCAO);
+        final String[] seccao = {prefs.getString(Constantes.PREF_SECCAO, ValoresDefeito.SECCAO)};
 
-        Log.i(TAG, "SECÇÃO PREFERENCE: " + seccao);
-        String[] array_seccoes = getResources().getStringArray(R.array.array_seccao);
-        int pos = Arrays.asList(array_seccoes).indexOf(seccao);
-        spinn_seccao.setSelection(pos);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(Constantes.NODE_SECCAO);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<Machina> listaMachinas = new ArrayList<>();
+                ArrayList<String> listaSeccao = new ArrayList<>();
+                for (DataSnapshot snap1 : dataSnapshot.getChildren()) {
+                    String secc = snap1.getKey();
+                    listaSeccao.add(secc);
+                    for (DataSnapshot snap2 : snap1.getChildren()) {
+                        String maq = snap2.getKey();
+                        Machina machina = snap2.getValue(Machina.class);
+                        machina.seccao = secc;
+                        machina.codigo = maq;
+                        listaMachinas.add(machina);
+                    }
+                }
+
+                String[] array_seccoes = new String[listaSeccao.size()];
+                array_seccoes = listaSeccao.toArray(array_seccoes);
+                spinn_seccao.setAdapter(new ArrayAdapter<>(spinn_seccao.getContext(), android.R.layout.simple_spinner_dropdown_item, array_seccoes));
+                int pos = Arrays.asList(array_seccoes).indexOf(seccao[0]);
+                spinn_seccao.setSelection(pos);
+
+                MrApp.setListaDeMaquina(listaMachinas);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        Log.i(TAG, "SECÇÃO PREFERENCE: " + seccao[0]);
+//        String[] array_seccoes = getResources().getStringArray(R.array.array_seccao);
+//        int pos = Arrays.asList(array_seccoes).indexOf(seccao[0]);
+//        spinn_seccao.setSelection(pos);
         spinn_seccao.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, final View view, int i, long l) {
@@ -54,8 +97,8 @@ public class Entrada extends AppCompatActivity {
         final String estado = prefs.getString(Constantes.PREF_ESTADO, ValoresDefeito.ESTADO);
         Log.i(TAG, "ESTADO PREFERENCE: " + estado);
         String[] array_estados = getResources().getStringArray(R.array.array_estados);
-        pos = Arrays.asList(array_estados).indexOf(estado);
-        spinn_estado.setSelection(pos);
+        int posEstado = Arrays.asList(array_estados).indexOf(estado);
+        spinn_estado.setSelection(posEstado);
         spinn_estado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, final View view, int i, long l) {

@@ -22,7 +22,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.hanks.htextview.HTextView;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 
@@ -32,13 +31,12 @@ import pt.bamer.bameropseccao.charts.PieHoje;
 import pt.bamer.bameropseccao.objectos.OSBI;
 import pt.bamer.bameropseccao.objectos.OSBO;
 import pt.bamer.bameropseccao.objectos.OSPROD;
+import pt.bamer.bameropseccao.objectos.OSTIMER;
+import pt.bamer.bameropseccao.utils.Constantes;
 import pt.bamer.bameropseccao.utils.Funcoes;
 
 public class PainelGlobal extends AppCompatActivity {
     private static final String TAG = "LOG" + PainelGlobal.class.getSimpleName();
-    private static final String NODE_OSBO = "osbo";
-    private static final String NODE_OSBI = "osbi03";
-    private static final String NODE_OSPROD = "osprod";
     private SmoothProgressBar pb_smooth;
     private PieHoje pieQtdsHoje;
     private HTextView htv_qtt_antes;
@@ -64,7 +62,7 @@ public class PainelGlobal extends AppCompatActivity {
         cardview_inspeccao.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(), "a implementar", Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), "** ainda não implementado **", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -105,29 +103,6 @@ public class PainelGlobal extends AppCompatActivity {
         ref.addValueEventListener(listenerFirebase);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart()");
-//        pb_smooth.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume()");
-//        ref.addValueEventListener(listenerFirebase);
-    }
-
-    private void painelFuturo() {
-        DateTime dateTime = new DateTime().withTimeAtStartOfDay();
-        dateTime = dateTime.plusDays(2);
-        LocalDateTime futuro = dateTime.toLocalDateTime();
-        final String dataFuturoTxt = Funcoes.localDateTimeToStrFullaZeroHour(futuro);
-
-
-    }
-
     public void addTimer(TimerDePainelGlobal timerDePainelGlobal) {
 
     }
@@ -136,8 +111,9 @@ public class PainelGlobal extends AppCompatActivity {
         private final ArrayList<OSBO> listaOSBO;
         private final ArrayList<OSBI> listaOSBI;
         private final ArrayList<OSPROD> listaOSPROD;
-        private final DataSnapshot dataSnapShot;
+        private ArrayList<OSTIMER> listaOSTIMER;
         private final ArrayList<OSBO> listaInspeccao;
+        private final DataSnapshot dataSnapShot;
         private int totalAtrasado = 0;
         private int totalHoje = 0;
         private int totalAmanha = 0;
@@ -148,6 +124,7 @@ public class PainelGlobal extends AppCompatActivity {
             this.listaOSBO = new ArrayList<>();
             this.listaOSBI = new ArrayList<>();
             this.listaOSPROD = new ArrayList<>();
+            this.listaOSTIMER = new ArrayList<>();
             this.listaInspeccao = new ArrayList<>();
             this.dataSnapShot = dataSnapshot;
         }
@@ -162,7 +139,7 @@ public class PainelGlobal extends AppCompatActivity {
         protected Void doInBackground(Void... voids) {
             for (DataSnapshot snap : dataSnapShot.getChildren()) {
                 Log.i(TAG, "SNAP KEY: " + snap.getKey());
-                if (snap.getKey().equals(NODE_OSBO)) {
+                if (snap.getKey().equals(Constantes.NODE_OSBO)) {
                     for (DataSnapshot snapshotOSBO : snap.getChildren()) {
                         String bostamp = snapshotOSBO.getKey();
                         OSBO osbo = snapshotOSBO.getValue(OSBO.class);
@@ -173,7 +150,7 @@ public class PainelGlobal extends AppCompatActivity {
                         }
                     }
                 }
-                if (snap.getKey().equals(NODE_OSBI)) {
+                if (snap.getKey().equals(Constantes.NODE_OSBI)) {
                     for (DataSnapshot snapshotOSBO : snap.getChildren()) {
                         String bostamp = snapshotOSBO.getKey();
                         for (DataSnapshot dataSnapshotOSBI : snapshotOSBO.getChildren()) {
@@ -185,7 +162,7 @@ public class PainelGlobal extends AppCompatActivity {
                     }
                 }
 
-                if (snap.getKey().equals(NODE_OSPROD)) {
+                if (snap.getKey().equals(Constantes.NODE_OSPROD)) {
                     for (DataSnapshot snapshotOSPROD : snap.getChildren()) {
                         String bostamp = snapshotOSPROD.getKey();
                         for (DataSnapshot dataSnapshotOSPROD : snapshotOSPROD.getChildren()) {
@@ -196,8 +173,20 @@ public class PainelGlobal extends AppCompatActivity {
                         }
                     }
                 }
+
+                if (snap.getKey().equals(Constantes.NODE_OSTIMER)) {
+                    for (DataSnapshot snapshotOSTimer : snap.getChildren()) {
+                        String bostamp = snapshotOSTimer.getKey();
+                        for (DataSnapshot dataSnapshotOSTIMER : snapshotOSTimer.getChildren()) {
+                            OSTIMER ostimer = dataSnapshotOSTIMER.getValue(OSTIMER.class);
+                            ostimer.bostamp = bostamp;
+                            ostimer.bistamp = dataSnapshotOSTIMER.getKey();
+                            listaOSTIMER.add(ostimer);
+                        }
+                    }
+                }
             }
-            Log.i(TAG, "listaOSBO: " + listaOSBO.size() + ", listaOSBI: " + listaOSBI.size() + ", lista OSPROD: " + listaOSPROD.size());
+            Log.i(TAG, "listaOSBO: " + listaOSBO.size() + ", listaOSBI: " + listaOSBI.size() + ", lista OSPROD: " + listaOSPROD.size() + ", lista OSTIMER: " + listaOSTIMER.size());
 
             for (OSBO osbo : listaOSBO) {
                 String bostamp = osbo.bostamp;

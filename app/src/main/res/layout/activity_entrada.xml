@@ -46,7 +46,7 @@
                 android:id="@+id/spinn_seccao"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:entries="@array/array_seccao"
+
                 android:padding="10dp"
                 android:prompt="@string/seccao"
                 android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
@@ -110,12 +110,6 @@
                 android:layout_span="2"
                 android:padding="40dp"
                 android:text="@string/ok" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
         </TableRow>
 
     </TableLayout>
