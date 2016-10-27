@@ -18,7 +18,7 @@ import java.util.List;
 import pt.bamer.bameropseccao.Dossier;
 import pt.bamer.bameropseccao.MrApp;
 import pt.bamer.bameropseccao.R;
-import pt.bamer.bameropseccao.database.dbHelper;
+import pt.bamer.bameropseccao.database.DBSqlite;
 import pt.bamer.bameropseccao.objectos.OSBI;
 import pt.bamer.bameropseccao.utils.Constantes;
 
@@ -66,7 +66,7 @@ public class TarefaRecyclerAdapter extends RecyclerView.Adapter {
 
     public void populate(ArrayList<OSBI> listaOSBI) {
 
-        lista = new dbHelper(activityDossier).gravarLista(listaOSBI, true);
+        lista = new DBSqlite(activityDossier).gravarLista(listaOSBI, true);
         notifyDataSetChanged();
     }
 

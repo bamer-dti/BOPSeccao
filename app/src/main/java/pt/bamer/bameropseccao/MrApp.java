@@ -14,22 +14,17 @@ import pt.bamer.bameropseccao.utils.ValoresDefeito;
 
 public class MrApp extends Application {
     private static SharedPreferences prefs;
-    private static String operador;
     private static String estado;
     private static ToneGenerator toneG;
     private static ProgressDialog dialogoInterminavel;
-    private static ArrayList<Machina> listaDeMaquina;
+    private static ArrayList<Machina> listaDeMachinas;
 
     public static SharedPreferences getPrefs() {
         return prefs;
     }
 
-    public static void setOperador(String operador) {
-        MrApp.operador = operador;
-    }
-
-    public static void setListaDeMaquina(ArrayList<Machina> listaDeMaquina) {
-        MrApp.listaDeMaquina = listaDeMaquina;
+    public static void setListaDeMachinas(ArrayList<Machina> listaDeMachinas) {
+        MrApp.listaDeMachinas = listaDeMachinas;
     }
 
     @Override
@@ -51,10 +46,21 @@ public class MrApp extends Application {
     }
 
     public static String getEstado() {
-        return  prefs.getString(Constantes.PREF_ESTADO, ValoresDefeito.ESTADO);
+        return prefs.getString(Constantes.PREF_ESTADO, ValoresDefeito.ESTADO);
     }
 
     public static ToneGenerator getToneG() {
         return toneG;
+    }
+
+    public static ArrayList<Machina> getMachinas() {
+        String sec = getSeccao();
+        ArrayList<Machina> lista = new ArrayList<>();
+        for (Machina machina : listaDeMachinas) {
+            if (machina.seccao.equals(sec)) {
+                lista.add(machina);
+            }
+        }
+        return lista;
     }
 }

@@ -1,6 +1,7 @@
 package pt.bamer.bameropseccao;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,7 +12,10 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +32,8 @@ import java.util.ArrayList;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import pt.bamer.bameropseccao.adapters.AdapterOS;
 import pt.bamer.bameropseccao.charts.PieHoje;
+import pt.bamer.bameropseccao.database.DBSqlite;
+import pt.bamer.bameropseccao.objectos.Machina;
 import pt.bamer.bameropseccao.objectos.OSBI;
 import pt.bamer.bameropseccao.objectos.OSBO;
 import pt.bamer.bameropseccao.objectos.OSPROD;
@@ -44,6 +50,7 @@ public class PainelGlobal extends AppCompatActivity {
     private HTextView htv_inspeccao_numero;
     private HTextView htv_qtt_futuro;
     private AdapterOS adapterOS;
+    private HTextView htv_qtt_antes_produzido;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -81,6 +88,7 @@ public class PainelGlobal extends AppCompatActivity {
         htv_qtt_futuro = (HTextView) findViewById(R.id.htv_qtt_futuro);
         htv_qtt_amanha = (HTextView) findViewById(R.id.htv_qtt_amanha);
         htv_qtt_antes = (HTextView) findViewById(R.id.htv_qtt_antes);
+        htv_qtt_antes_produzido = (HTextView) findViewById(R.id.htv_qtt_antes_produzido);
 
         pieQtdsHoje = (PieHoje) findViewById(R.id.pie_hoje);
 
@@ -101,10 +109,60 @@ public class PainelGlobal extends AppCompatActivity {
         adapterOS = new AdapterOS(this);
         recycler_os.setAdapter(adapterOS);
         ref.addValueEventListener(listenerFirebase);
+
+        efectuarMostradorMaquinas(this);
     }
 
-    public void addTimer(TimerDePainelGlobal timerDePainelGlobal) {
+    private void efectuarMostradorMaquinas(final Context context) {
+        LinearLayout ll_maquinas = (LinearLayout) findViewById(R.id.ll_maquinas);
+        ArrayList<Machina> listaMachinas = MrApp.getMachinas();
+        final ArrayList<Cartao_Machina> lista_cartoes_machina = new ArrayList<>();
+        for (int i = 0; i < listaMachinas.size(); i++) {
+            final Machina machina = listaMachinas.get(i);
+            Log.i(TAG, "Nome da máquina: " + machina);
 
+            Cartao_Machina cartao_machina = new Cartao_Machina(context, machina);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            int margem = (int) getResources().getDimension(R.dimen.margem_cartao_maquina);
+            params.setMargins(margem, margem, margem, margem);
+            params.gravity = Gravity.CENTER_HORIZONTAL;
+            ll_maquinas.addView(cartao_machina, params);
+            lista_cartoes_machina.add(cartao_machina);
+        }
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(Constantes.NODE_OSTIMER);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                ArrayList<OSTIMER> listaOSTIMER = new ArrayList<>();
+                for (DataSnapshot snapshotOSTimer : snap.getChildren()) {
+                    String bostamp = snapshotOSTimer.getKey();
+                    for (DataSnapshot dataSnapshotOSTIMER : snapshotOSTimer.getChildren()) {
+                        OSTIMER ostimer = dataSnapshotOSTIMER.getValue(OSTIMER.class);
+                        ostimer.bostamp = bostamp;
+                        ostimer.bistamp = dataSnapshotOSTIMER.getKey();
+                        if (ostimer.seccao.equals(MrApp.getSeccao())) {
+                            listaOSTIMER.add(ostimer);
+                        }
+                    }
+                }
+                int resultados = new DBSqlite(context).saveTimers(listaOSTIMER);
+                Log.i(TAG, "Gravados " + resultados + " registo(s) no SQL OSTIMER");
+
+                verificarMaquinas(lista_cartoes_machina);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void verificarMaquinas(ArrayList<Cartao_Machina> lista_cartoes_machina) {
+        for (Cartao_Machina cartao_machina : lista_cartoes_machina) {
+            cartao_machina.actualizarCronometros();
+        }
     }
 
     private class TaskFirebase extends AsyncTask<Void, Void, Void> {
@@ -118,7 +176,8 @@ public class PainelGlobal extends AppCompatActivity {
         private int totalHoje = 0;
         private int totalAmanha = 0;
         private int totalFuturo = 0;
-        private int totalProduzido = 0;
+        private int totalProduzidoHoje = 0;
+        private int totalProduzidoOntem = 0;
 
         public TaskFirebase(DataSnapshot dataSnapshot) {
             this.listaOSBO = new ArrayList<>();
@@ -225,8 +284,13 @@ public class PainelGlobal extends AppCompatActivity {
                 for (OSPROD osprod : listaOSPROD) {
                     if (osprod.bostamp.equals(bostamp)) {
                         parcialProduzido += osprod.qtt;
-                        totalProduzido += osprod.qtt;
-                        Log.e(TAG, "OSPRO bostamp = " + osprod.bostamp + ": " + totalProduzido + "/" + osprod.qtt);
+                        if (dataOSBO.isEqual(dataHoje)) {
+                            totalProduzidoHoje += osprod.qtt;
+                        }
+                        if (dataOSBO.isBefore(dataHoje)) {
+                            totalProduzidoOntem += osprod.qtt;
+                        }
+                        Log.e(TAG, "OSPRO bostamp = " + osprod.bostamp + ": " + totalProduzidoHoje + "/" + osprod.qtt);
                     }
                 }
                 Log.d(TAG, "Painel: " + bostamp + ", " + dataHoje + ", " + dataOSBO
@@ -259,6 +323,11 @@ public class PainelGlobal extends AppCompatActivity {
                     if (!textoAntes.equals(textoNovo))
                         htv_qtt_antes.animateText("" + totalAtrasado);
 
+                    textoAntes = htv_qtt_antes_produzido.getText().toString();
+                    textoNovo = "" + totalProduzidoOntem;
+                    if (!textoAntes.equals(textoNovo))
+                        htv_qtt_antes_produzido.animateText(textoNovo.equals("0") ? "" : textoNovo);
+
                     textoAntes = htv_qtt_amanha.getText().toString();
                     textoNovo = "" + totalAmanha;
                     if (!textoAntes.equals(textoNovo))
@@ -269,7 +338,7 @@ public class PainelGlobal extends AppCompatActivity {
                     if (!textoAntes.equals(textoNovo))
                         htv_qtt_futuro.animateText(textoNovo);
 
-                    pieQtdsHoje.setData(totalProduzido, totalHoje);
+                    pieQtdsHoje.setData(totalProduzidoHoje, totalHoje);
                 }
             });
 

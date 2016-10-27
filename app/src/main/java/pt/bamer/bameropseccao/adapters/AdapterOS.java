@@ -3,7 +3,6 @@ package pt.bamer.bameropseccao.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +26,7 @@ import java.util.Locale;
 import pt.bamer.bameropseccao.Dossier;
 import pt.bamer.bameropseccao.PainelGlobal;
 import pt.bamer.bameropseccao.R;
+import pt.bamer.bameropseccao.database.DBSqlite;
 import pt.bamer.bameropseccao.objectos.OSBI;
 import pt.bamer.bameropseccao.objectos.OSBO;
 import pt.bamer.bameropseccao.objectos.OSPROD;
@@ -114,7 +114,7 @@ public class AdapterOS extends RecyclerView.Adapter {
 
         new TaskCalcularValores(bostamp, viewHolder).execute();
 
-        new TaskCalcularTempo(bostamp, viewHolder.tv_temporal).execute();
+        new TaskCalcularTempo(bostamp, viewHolder).execute();
 
         viewHolder.llclick.setTag(bostamp);
 
@@ -141,6 +141,7 @@ public class AdapterOS extends RecyclerView.Adapter {
         private final TextView tv_qttfeita;
         private final TextView tv_temporal;
         private final LinearLayout llclick;
+        public long tempoCalculado;
 
         public ViewHolder(View view) {
             super(view);
@@ -167,27 +168,27 @@ public class AdapterOS extends RecyclerView.Adapter {
     }
 
     private class TaskCalcularTempo extends AsyncTask<Void, Void, Void> {
-        @SuppressWarnings("unused")
         private final String bostamp;
         private final TextView tv_temporal;
-        private long tempoCalculado;
+        private final ViewHolder viewHolder;
 
-        public TaskCalcularTempo(String bostamp, TextView tv_temporal) {
+        public TaskCalcularTempo(String bostamp, AdapterOS.ViewHolder viewHolder) {
             this.bostamp = bostamp;
-            this.tv_temporal = tv_temporal;
+            this.tv_temporal = viewHolder.tv_temporal;
+            this.viewHolder = viewHolder;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            tempoCalculado = 0;
+            viewHolder.tempoCalculado = new DBSqlite(context).getTempoTotal(bostamp);
             return null;
         }
 
-        @SuppressLint("SetTextI18n")
         @Override
         protected void onPostExecute(Void aVoid) {
-            String textoTempo = Funcoes.milisegundos_em_HH_MM_SS(tempoCalculado * 1000);
-            tv_temporal.setText("" + (tempoCalculado == 0 ? "" : textoTempo));
+            String textoTempo = Funcoes.milisegundos_em_HH_MM_SS(viewHolder.tempoCalculado * 1000);
+            tv_temporal.setText("" + (viewHolder.tempoCalculado == 0 ? "" : textoTempo));
+            new TaskPosicaoDoUltimoTempo(bostamp, viewHolder).execute();
         }
     }
 
@@ -195,34 +196,34 @@ public class AdapterOS extends RecyclerView.Adapter {
         @SuppressWarnings("unused")
         private final String bostamp_;
         private final LinearLayout llclick_;
+        private int tipoTempo = 0;
 
-        public TaskPosicaoDoUltimoTempo(String bostamp, LinearLayout llclick) {
+        public TaskPosicaoDoUltimoTempo(String bostamp, AdapterOS.ViewHolder viewHolder) {
             this.bostamp_ = bostamp;
-            this.llclick_ = llclick;
+            this.llclick_ = viewHolder.llclick;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-
+            tipoTempo = new DBSqlite(context).getUltimaPosicaoTempo(bostamp_);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             PainelGlobal painel = (PainelGlobal) context;
-            painel.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    llclick_.setBackgroundColor(Color.WHITE);
-                }
-            });
+//            painel.runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    llclick_.setBackgroundColor(Color.WHITE);
+//                }
+//            });
 
-            final int tipoTempo = Integer.parseInt("0");
             painel.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if (tipoTempo == Constantes.MODO_STARTED) {
-                        llclick_.setBackgroundColor(ContextCompat.getColor(llclick_.getContext(), R.color.md_green_100));
+                        llclick_.setBackgroundColor(ContextCompat.getColor(llclick_.getContext(), R.color.md_yellow_100));
                     }
                 }
             });

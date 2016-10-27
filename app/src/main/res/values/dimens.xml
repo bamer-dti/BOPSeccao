@@ -6,4 +6,5 @@
     <dimen name="margem_cartao_maquina">5sp</dimen>
     <dimen name="tamanho_fonte_numero_inspeccao">120sp</dimen>
     <dimen name="tamanho_fonte_numero_cartao_qtd">40sp</dimen>
+    <dimen name="tamanho_fonte_numero_cartao_qtd_produzida">25sp</dimen>
 </resources>

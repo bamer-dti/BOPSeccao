@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TableLayout;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +31,8 @@ import pt.bamer.bameropseccao.utils.ValoresDefeito;
 public class Entrada extends AppCompatActivity {
 
     private static final String TAG = Entrada.class.getSimpleName();
+    private SmoothProgressBar pb_smooth;
+    private TableLayout tbl;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +42,9 @@ public class Entrada extends AppCompatActivity {
         final Spinner spinn_seccao = (Spinner) findViewById(R.id.spinn_seccao);
         final SharedPreferences prefs = MrApp.getPrefs();
         final String[] seccao = {prefs.getString(Constantes.PREF_SECCAO, ValoresDefeito.SECCAO)};
+
+tbl = (TableLayout) findViewById(R.id.tbl);
+        tbl.setVisibility(View.GONE);
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(Constantes.NODE_SECCAO);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -64,7 +70,10 @@ public class Entrada extends AppCompatActivity {
                 int pos = Arrays.asList(array_seccoes).indexOf(seccao[0]);
                 spinn_seccao.setSelection(pos);
 
-                MrApp.setListaDeMaquina(listaMachinas);
+                tbl.setVisibility(View.VISIBLE);
+                pb_smooth.setVisibility(View.GONE);
+
+                MrApp.setListaDeMachinas(listaMachinas);
             }
 
             @Override
@@ -73,6 +82,14 @@ public class Entrada extends AppCompatActivity {
             }
         });
 
+        Button butok = (Button) findViewById(R.id.butok);
+        butok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), PainelGlobal.class);
+                startActivity(intent);
+            }
+        });
 
         Log.i(TAG, "SECÇÃO PREFERENCE: " + seccao[0]);
 //        String[] array_seccoes = getResources().getStringArray(R.array.array_seccao);
@@ -116,18 +133,9 @@ public class Entrada extends AppCompatActivity {
 
         final Spinner spinner_funcionario = (Spinner) findViewById(R.id.spinner_funcionario);
 
-        Button butok = (Button) findViewById(R.id.butok);
-        butok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MrApp.setOperador(spinner_funcionario.getSelectedItem().toString());
-                Intent intent = new Intent(view.getContext(), PainelGlobal.class);
-                startActivity(intent);
-            }
-        });
 
-        SmoothProgressBar pb_smooth = (SmoothProgressBar) findViewById(R.id.pb_smooth);
-        pb_smooth.setVisibility(View.INVISIBLE);
+        pb_smooth = (SmoothProgressBar) findViewById(R.id.pb_smooth);
+        pb_smooth.setVisibility(View.VISIBLE);
     }
 
     @Override

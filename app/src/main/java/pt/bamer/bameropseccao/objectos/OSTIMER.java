@@ -10,6 +10,8 @@ public class OSTIMER {
     public String operador;
     public String seccao;
     public String estado;
+    public int obrano;
+    public String fref;
 
     public OSTIMER() {
 
@@ -25,6 +27,9 @@ public class OSTIMER {
                 + ", maquina: " + maquina
                 + ", operador: " + operador
                 + ", seccao: " + seccao
-                + ",estado: " + estado;
+                + ", estado: " + estado
+                + ", obrano: " + obrano
+                + ", fref: " + fref
+                ;
     }
 }

@@ -14,47 +14,49 @@ import com.hanks.htextview.HTextView;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+import java.util.Timer;
 import java.util.TimerTask;
 
+import pt.bamer.bameropseccao.database.DBSqlite;
+import pt.bamer.bameropseccao.objectos.Machina;
 import pt.bamer.bameropseccao.utils.Constantes;
 import pt.bamer.bameropseccao.utils.Funcoes;
 
-public class Cartao_Maquina extends CardView {
+public class Cartao_Machina extends CardView {
     private static String TAG;
+    private Machina machina;
     private PainelGlobal painelGlobalActivity;
-    private String idInterno = "vazio";
     private Context context = this.getContext();
-    private TimerDePainelGlobal cronometroOsEmTrabalho;
+    private Timer cronometroOsEmTrabalho;
     private TextView tv_maquina;
+    private HTextView htv_timer;
     private TextView tv_ultimo_utilizador;
     private TextView tv_ultimo_os;
     private TextView tv_ultimo_fref;
-    private HTextView htv_timer;
 
-    public Cartao_Maquina(Context context) {
+    public Cartao_Machina(Context context) {
         super(context);
         initialize(context);
     }
 
-    public Cartao_Maquina(Context context, AttributeSet attrs) {
+    public Cartao_Machina(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialize(context);
     }
 
-    public Cartao_Maquina(Context context, AttributeSet attrs, int defStyleAttr) {
+    public Cartao_Machina(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialize(context);
     }
 
-    public Cartao_Maquina(PainelGlobal painelGlobalActivity, String maquina) {
-        super(painelGlobalActivity);
-        TAG = Cartao_Maquina.class.getSimpleName() + "_" + maquina;
-        this.painelGlobalActivity = painelGlobalActivity;
-        idInterno = maquina;
-        maquina = maquina.toUpperCase();
-        initialize(painelGlobalActivity);
-        Log.d(TAG, "A colocar cartão da máquina " + maquina);
-        tv_maquina.setText(idInterno);
+    public Cartao_Machina(Context context, Machina machina) {
+        super(context);
+        TAG = Cartao_Machina.class.getSimpleName() + "_" + machina;
+        this.painelGlobalActivity = (PainelGlobal) context;
+        this.machina = machina;
+        initialize(context);
+        Log.d(TAG, "A colocar cartão da máquina " + machina);
+        tv_maquina.setText(machina.nome);
     }
 
     private void initialize(Context context) {
@@ -79,7 +81,7 @@ public class Cartao_Maquina extends CardView {
     }
 
 
-    private void colocarCronometroOsEmTrabalho(final long tempoUnix, final int tempoTipo) {
+    private void colocarCronometroOsEmTrabalho(final long tempoUnix, final int tempoTipo, final String operador, final int obrano, final String fref) {
         if (cronometroOsEmTrabalho != null) {
             cronometroOsEmTrabalho.cancel();
             cronometroOsEmTrabalho.purge();
@@ -91,10 +93,13 @@ public class Cartao_Maquina extends CardView {
                 final long unixNow = System.currentTimeMillis() / 1000L;
                 final long intervaloTempo = unixNow - tempoUnix;
                 final String textoIntervaloTempo = "" + Funcoes.milisegundos_em_HH_MM_SS(intervaloTempo * 1000);
-                Log.v("CRONOGRAFO", idInterno + "-> ** " + textoIntervaloTempo);
+                Log.v("CRONOGRAFO", machina.codigo + "-> ** " + textoIntervaloTempo);
                 painelGlobalActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        tv_ultimo_utilizador.setText(operador);
+                        tv_ultimo_os.setText("os " + obrano);
+                        tv_ultimo_fref.setText(fref);
                         if (tempoTipo == Constantes.MODO_STARTED) {
                             setCardBackgroundColor(ContextCompat.getColor(context, R.color.md_green_300));
 
@@ -118,16 +123,24 @@ public class Cartao_Maquina extends CardView {
                 });
             }
         };
-        cronometroOsEmTrabalho = new TimerDePainelGlobal(painelGlobalActivity);
-        cronometroOsEmTrabalho.schedule(timerTaskOS_em_Trabalho, 0, 1000);
-    }
-
-    public String getIdInterno() {
-        return idInterno;
+        if (tempoTipo != -1) {
+            cronometroOsEmTrabalho = new Timer();
+            cronometroOsEmTrabalho.schedule(timerTaskOS_em_Trabalho, 0, 1000);
+        }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    public void actualizarCronometros() {
+        Object[] obj = new DBSqlite(context).getUltimoTempo(machina);
+        long unixtime = (long) obj[0];
+        int posicao = (int) obj[1];
+        String operador = (String) obj[2];
+        int obrano = (int) obj[3];
+        String fref = (String) obj[4];
+        colocarCronometroOsEmTrabalho(unixtime, posicao, operador, obrano, fref);
     }
 }
