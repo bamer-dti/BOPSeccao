@@ -33,7 +33,6 @@ public class MrApp extends Application {
         prefs = getSharedPreferences(Constantes.PREFS_NAME, MODE_PRIVATE);
         estado = prefs.getString(Constantes.PREF_ESTADO, ValoresDefeito.ESTADO);
         toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
-
     }
 
     @Override
