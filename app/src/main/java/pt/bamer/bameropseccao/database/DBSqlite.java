@@ -16,9 +16,11 @@ import pt.bamer.bameropseccao.objectos.OSTIMER;
 public class DBSqlite extends SQLiteOpenHelper {
     private static final String TAG = DBSqlite.class.getSimpleName();
     private static final String DATABASE_NAME = "opsec";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
+
     private static final String TABELA_OSBI_GROUP = "osbi_grp";
     private static final String TABELA_TIMERS = "tabtimers";
+
     private static final String COLID = "_id";
     private static final String BOSTAMP = "bostamp";
     private static final String BISTAMP = "bistamp";
@@ -38,12 +40,15 @@ public class DBSqlite extends SQLiteOpenHelper {
     private static final String UNIXTIME = "unixtime";
     private static final String OBRANO = "obrano";
     private static final String FREF = "fref";
+    private static final String NUMLINHA = "numlinha";
+
     private static final String DATABASE_CREATE_TABLE_OSBI_GROUP = "Create Table " + TABELA_OSBI_GROUP + "("
             + COLID + " integer primary key autoincrement, "
             + DESIGN + " text not null, "
             + DIM + " text not null, "
             + FAMILIA + " text not null, "
             + MK + " text not null, "
+            + NUMLINHA + " text not null, "
             + QTT + " real not null, "
             + REF + " real not null, "
             + TIPO + " real not null, "
@@ -84,7 +89,7 @@ public class DBSqlite extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public ArrayList<OSBI> gravarLista(ArrayList<OSBI> listaOSBI, boolean mostrarPormenor) {
+    public ArrayList<OSBI> gravarLista(ArrayList<OSBI> listaOSBI) {
         SQLiteDatabase dbw = getWritableDatabase();
         dbw.beginTransaction();
         dbw.delete(TABELA_OSBI_GROUP, "", null);
@@ -99,6 +104,7 @@ public class DBSqlite extends SQLiteOpenHelper {
             contentValues.put(TIPO, osbi.tipo);
             contentValues.put(BOSTAMP, osbi.bostamp);
             contentValues.put(BISTAMP, osbi.bistamp);
+            contentValues.put(NUMLINHA, osbi.numlinha);
             dbw.insert(TABELA_OSBI_GROUP, null, contentValues);
         }
         dbw.setTransactionSuccessful();
@@ -106,39 +112,25 @@ public class DBSqlite extends SQLiteOpenHelper {
         dbw.close();
 
         SQLiteDatabase dbr = getReadableDatabase();
-        Cursor cursor = dbr.query(TABELA_OSBI_GROUP, new String[]{REF, DESIGN, "SUM(" + QTT + ") as " + QTT, DIM, MK}, "", null, REF + ", " + DESIGN + ", " + DIM + ", " + MK,
-                "", DIM + ", " + MK + ", " + DESIGN);
+        Cursor cursor = dbr.query(TABELA_OSBI_GROUP, new String[]{BOSTAMP, REF, DESIGN, "SUM(" + QTT + ") as " + QTT, DIM, MK, NUMLINHA}, ""
+                , null
+                , BOSTAMP + ", "+ REF + ", " + DESIGN + ", " + DIM + ", " + MK + ", " + NUMLINHA
+                , ""
+                , DIM + ", " + MK + ", " + NUMLINHA + ", " + DESIGN);
         Log.i(TAG, "gravarLista tem " + cursor.getCount() + " registos no cursor...");
         ArrayList<OSBI> listaAgrupada = new ArrayList<>();
         if (cursor.moveToNext()) {
             do {
                 OSBI osbi = new OSBI();
+                osbi.bostamp = cursor.getString(cursor.getColumnIndex(BOSTAMP));
                 osbi.ref = cursor.getString(cursor.getColumnIndex(REF));
                 osbi.design = cursor.getString(cursor.getColumnIndex(DESIGN));
                 osbi.qtt = cursor.getInt(cursor.getColumnIndex(QTT));
                 osbi.dim = cursor.getString(cursor.getColumnIndex(DIM));
                 osbi.mk = cursor.getString(cursor.getColumnIndex(MK));
+                osbi.numlinha = cursor.getString(cursor.getColumnIndex(NUMLINHA));
                 listaAgrupada.add(osbi);
             } while (cursor.moveToNext());
-        }
-        if (mostrarPormenor) {
-            listaAgrupada.add(new OSBI("", "desagrupado -", 0, "", ""));
-
-            cursor.close();
-            cursor = dbr.query(TABELA_OSBI_GROUP, new String[]{REF, DESIGN, QTT, DIM, MK}, "", null, null,
-                    "", DIM + ", " + MK + ", " + DESIGN);
-            Log.i(TAG, "gravarLista tem " + cursor.getCount() + " registos no cursor...");
-            if (cursor.moveToNext()) {
-                do {
-                    OSBI osbi = new OSBI();
-                    osbi.ref = cursor.getString(cursor.getColumnIndex(REF));
-                    osbi.design = cursor.getString(cursor.getColumnIndex(DESIGN));
-                    osbi.qtt = cursor.getInt(cursor.getColumnIndex(QTT));
-                    osbi.dim = cursor.getString(cursor.getColumnIndex(DIM));
-                    osbi.mk = cursor.getString(cursor.getColumnIndex(MK));
-                    listaAgrupada.add(osbi);
-                } while (cursor.moveToNext());
-            }
         }
         cursor.close();
         dbr.close();

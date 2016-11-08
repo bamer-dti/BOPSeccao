@@ -290,7 +290,6 @@ public class PainelGlobal extends AppCompatActivity {
                         if (dataOSBO.isBefore(dataHoje)) {
                             totalProduzidoOntem += osprod.qtt;
                         }
-                        Log.e(TAG, "OSPRO bostamp = " + osprod.bostamp + ": " + totalProduzidoHoje + "/" + osprod.qtt);
                     }
                 }
                 Log.d(TAG, "Painel: " + bostamp + ", " + dataHoje + ", " + dataOSBO
@@ -301,7 +300,6 @@ public class PainelGlobal extends AppCompatActivity {
                 );
 
                 int pedido = parcialAtrasado + parcialHoje + parcialAmanha + parcialFuturo;
-
 
                 //Prontos para inspecção!
                 if (parcialProduzido >= pedido) {

@@ -65,7 +65,7 @@ public class PieHoje extends PieChart {
 
 //        animateY(1400, Easing.EasingOption.EaseInOutQuad);
         setEntryLabelColor(Color.DKGRAY);
-        setEntryLabelTextSize(12f);
+        setEntryLabelTextSize(9f); //total e produzida
 
     }
 
@@ -111,7 +111,7 @@ public class PieHoje extends PieChart {
             }
         };
         data.setValueFormatter(valueFormatter);
-        data.setValueTextSize(30f);
+        data.setValueTextSize(20f); //Tamanho dos valores
         data.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_green_800));
 //        data.setValueTypeface(mTfLight);
         setData(data);
@@ -121,7 +121,7 @@ public class PieHoje extends PieChart {
 
         float calculo = produzida * 1f / totalpedido * 1f * 100f;
         setCenterText(String.format(Locale.getDefault(), "%.0f%%", calculo));
-        setCenterTextSize(30f);
+        setCenterTextSize(18f); //tamanho da percentagem
 
         invalidate();
         this.qttPedida = totalpedido;

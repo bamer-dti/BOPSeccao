@@ -8,4 +8,13 @@ public class OSPROD {
     public String design;
     public String dim;
     public String mk;
+    public String numlinha;
+
+    @Override
+    public String toString() {
+        return "bostamp: " + bostamp + ", bistamp: " + bistamp + ", design: " + design
+                + ", dim: " + dim + ", mk: " + mk
+                + ", numlinha: " + numlinha + ", qtt: " + qtt + ", ref: " + ref
+                ;
+    }
 }
