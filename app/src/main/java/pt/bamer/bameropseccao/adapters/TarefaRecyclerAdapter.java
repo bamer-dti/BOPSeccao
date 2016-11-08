@@ -143,7 +143,6 @@ public class TarefaRecyclerAdapter extends RecyclerView.Adapter {
                         OSPROD osprod = d.getValue(OSPROD.class);
                         osprod.bostamp = bostamp;
                         osprod.bistamp = d.getKey();
-                        Log.i(TAG, "OSPROD: " + osprod.toString());
                         lista.add(osprod);
                     }
                     int qttFeita = 0;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Bamer OP Secção</string>
+    <string name="app_name">Dashboard Secção</string>
     <string name="seccao">Secção</string>
     <string name="maquina">Máquina</string>
     <string name="funcionario">Funcionário</string>
