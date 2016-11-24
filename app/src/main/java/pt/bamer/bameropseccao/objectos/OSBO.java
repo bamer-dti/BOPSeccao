@@ -19,4 +19,5 @@ public class OSBO {
     public int ordem;
     public String seccao;
     public String bostamp;
+    public int pecas;
 }

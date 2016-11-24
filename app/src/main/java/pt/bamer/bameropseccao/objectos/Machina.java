@@ -5,4 +5,5 @@ public class Machina {
     public String ref;
     public String funcao;
     public String nome;
+    public int ordem;
 }

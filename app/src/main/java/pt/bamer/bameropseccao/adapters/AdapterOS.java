@@ -45,18 +45,6 @@ public class AdapterOS extends RecyclerView.Adapter {
         listaOSBO = new ArrayList<>();
     }
 
-    public void actualizarValoresAdapter(final List<OSBO> lOSBO, final List<OSBI> lOSBI, final List<OSPROD> lOSPROD) {
-        ((PainelGlobal) context).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ordered(lOSBO);
-                listaOSBO = lOSBO;
-                Log.v(TAG, "AdapterOS tem " + listaOSBO.size() + " linhas!");
-                notifyDataSetChanged();
-            }
-        });
-    }
-
     private void ordered(List<OSBO> lOSBO) {
         //noinspection unchecked
         Collections.sort(lOSBO, new Comparator() {
@@ -102,6 +90,8 @@ public class AdapterOS extends RecyclerView.Adapter {
 
         localDateTime = Funcoes.cToT(osbo.dttransf);
         viewHolder.tv_dttransf.setText(dtf.print(localDateTime));
+
+        viewHolder.tv_qtt.setText(osbo.pecas != 0 ? "" + osbo.pecas : "");
 
         String bostamp = osbo.bostamp;
 
@@ -278,18 +268,17 @@ public class AdapterOS extends RecyclerView.Adapter {
         public TaskCalcularValores(String bostamp, ViewHolder viewHolder) {
             this.bostamp = bostamp;
             this.viewHolder = viewHolder;
+            this.qtt = getItem(viewHolder.getAdapterPosition()).pecas;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
             qttProd = new DBSqlite(context).getQtdProdBostamp(bostamp);
-            qtt = new DBSqlite(context).getQtdBostamp(bostamp);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            viewHolder.tv_qtt.setText(qtt != 0 ? "" + qtt : "");
             viewHolder.tv_qttfeita.setText(qttProd != 0 ? "" + qttProd : "");
             if (qttProd >= qtt)
                 viewHolder.llclick.setBackgroundColor(ContextCompat.getColor(context, R.color.md_green_100));

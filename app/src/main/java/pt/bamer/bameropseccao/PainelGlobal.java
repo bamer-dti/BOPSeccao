@@ -63,7 +63,7 @@ public class PainelGlobal extends AppCompatActivity {
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_painel_global);
 
-        setTitle(MrApp.getTituloBase(this));
+        setTitle(MrApp.getSeccao() + " *** " + MrApp.getTituloBase(this));
 
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -103,7 +103,6 @@ public class PainelGlobal extends AppCompatActivity {
         adapterOS = new AdapterOS(this);
         recycler_os.setAdapter(adapterOS);
         efectuarMostradorMaquinas(this);
-
     }
 
     private void configFirebase() {
