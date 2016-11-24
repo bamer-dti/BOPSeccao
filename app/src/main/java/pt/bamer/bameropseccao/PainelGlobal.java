@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,6 +52,9 @@ public class PainelGlobal extends AppCompatActivity {
     private HTextView htv_qtt_futuro;
     private AdapterOS adapterOS;
     private HTextView htv_qtt_antes_produzido;
+    private Context context = this;
+    private ArrayList<OSBO> listaOSBO = new ArrayList<>();
+
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -58,6 +62,8 @@ public class PainelGlobal extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_painel_global);
+
+        setTitle(MrApp.getTituloBase(this));
 
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -92,12 +98,50 @@ public class PainelGlobal extends AppCompatActivity {
 
         pieQtdsHoje = (PieHoje) findViewById(R.id.pie_hoje);
 
+        configFirebase();
+
+        adapterOS = new AdapterOS(this);
+        recycler_os.setAdapter(adapterOS);
+        efectuarMostradorMaquinas(this);
+
+    }
+
+    private void configFirebase() {
         FirebaseDatabase databaseref = FirebaseDatabase.getInstance();
-        DatabaseReference ref = databaseref.getReference();
-        ValueEventListener listenerFirebase = new ValueEventListener() {
+
+        DatabaseReference refFirebaseOSBO = databaseref.getReference(Constantes.NODE_OSBO);
+//        attachRecyclerViewAdapter();
+        refFirebaseOSBO.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        ValueEventListener listenerFirebaseOSBO = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                new TaskFirebase(dataSnapshot).execute();
+                new TaskFirebaseOSBO(dataSnapshot).execute();
             }
 
             @Override
@@ -105,12 +149,49 @@ public class PainelGlobal extends AppCompatActivity {
 
             }
         };
+        refFirebaseOSBO.addValueEventListener(listenerFirebaseOSBO);
 
-        adapterOS = new AdapterOS(this);
-        recycler_os.setAdapter(adapterOS);
-        ref.addValueEventListener(listenerFirebase);
+        DatabaseReference refFirebaseOSBI = databaseref.getReference(Constantes.NODE_OSBI);
+        ValueEventListener listenerFirebaseOSBI = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                new TaskFirebaseOSBI(dataSnapshot).execute();
+            }
 
-        efectuarMostradorMaquinas(this);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        refFirebaseOSBI.addValueEventListener(listenerFirebaseOSBI);
+
+        DatabaseReference refFirebaseOSPROD = databaseref.getReference(Constantes.NODE_OSPROD);
+        ValueEventListener listenerFirebaseOSPROD = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                new TaskFirebaseOSPROD(dataSnapshot).execute();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        refFirebaseOSPROD.addValueEventListener(listenerFirebaseOSPROD);
+
+        DatabaseReference refFirebaseOSTIMER = databaseref.getReference(Constantes.NODE_OSTIMER);
+        ValueEventListener listenerFirebaseOSTIMER = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                new TaskFirebaseOSTIMER(dataSnapshot).execute();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        refFirebaseOSTIMER.addValueEventListener(listenerFirebaseOSTIMER);
     }
 
     private void efectuarMostradorMaquinas(final Context context) {
@@ -165,26 +246,48 @@ public class PainelGlobal extends AppCompatActivity {
         }
     }
 
-    private class TaskFirebase extends AsyncTask<Void, Void, Void> {
-        private final ArrayList<OSBO> listaOSBO;
-        private final ArrayList<OSBI> listaOSBI;
-        private final ArrayList<OSPROD> listaOSPROD;
-        private ArrayList<OSTIMER> listaOSTIMER;
-        private final ArrayList<OSBO> listaInspeccao;
+    private class TaskFirebaseOSBO extends AsyncTask<Void, Void, Void> {
         private final DataSnapshot dataSnapShot;
-        private int totalAtrasado = 0;
-        private int totalHoje = 0;
-        private int totalAmanha = 0;
-        private int totalFuturo = 0;
-        private int totalProduzidoHoje = 0;
-        private int totalProduzidoOntem = 0;
 
-        public TaskFirebase(DataSnapshot dataSnapshot) {
-            this.listaOSBO = new ArrayList<>();
-            this.listaOSBI = new ArrayList<>();
-            this.listaOSPROD = new ArrayList<>();
-            this.listaOSTIMER = new ArrayList<>();
-            this.listaInspeccao = new ArrayList<>();
+        public TaskFirebaseOSBO(DataSnapshot dataSnapshot) {
+            this.dataSnapShot = dataSnapshot;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            pb_smooth.setVisibility(View.VISIBLE);
+            Log.i(TAG, "Secção " + MrApp.getSeccao() + ", estado " + MrApp.getEstado());
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            listaOSBO = new ArrayList<>();
+            for (DataSnapshot snapshotOSBO : dataSnapShot.getChildren()) {
+                String bostamp = snapshotOSBO.getKey();
+                OSBO osbo = snapshotOSBO.getValue(OSBO.class);
+                osbo.bostamp = bostamp;
+                if (osbo.seccao.equals(MrApp.getSeccao())
+                        && osbo.estado.equals(MrApp.getEstado())) {
+                    listaOSBO.add(osbo);
+                }
+            }
+            Log.i(TAG, "listaOSBO: " + listaOSBO.size());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            adapterOS.updateSourceDataOSBO(listaOSBO);
+            pb_smooth.setVisibility(View.INVISIBLE);
+            new ActualizarQuadros().execute();
+        }
+    }
+
+    private class TaskFirebaseOSBI extends AsyncTask<Void, Void, Void> {
+        private final ArrayList<OSBI> listaOSBI = new ArrayList<>();
+        private final DataSnapshot dataSnapShot;
+
+        public TaskFirebaseOSBI(DataSnapshot dataSnapshot) {
             this.dataSnapShot = dataSnapshot;
         }
 
@@ -197,56 +300,122 @@ public class PainelGlobal extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             for (DataSnapshot snap : dataSnapShot.getChildren()) {
-                Log.i(TAG, "SNAP KEY: " + snap.getKey());
-                if (snap.getKey().equals(Constantes.NODE_OSBO)) {
-                    for (DataSnapshot snapshotOSBO : snap.getChildren()) {
-                        String bostamp = snapshotOSBO.getKey();
-                        OSBO osbo = snapshotOSBO.getValue(OSBO.class);
-                        osbo.bostamp = bostamp;
-                        if (osbo.seccao.equals(MrApp.getSeccao())
-                                && osbo.estado.equals(MrApp.getEstado())) {
-                            listaOSBO.add(osbo);
-                        }
-                    }
-                }
-                if (snap.getKey().equals(Constantes.NODE_OSBI)) {
-                    for (DataSnapshot snapshotOSBO : snap.getChildren()) {
-                        String bostamp = snapshotOSBO.getKey();
-                        for (DataSnapshot dataSnapshotOSBI : snapshotOSBO.getChildren()) {
-                            OSBI osbi = dataSnapshotOSBI.getValue(OSBI.class);
-                            osbi.bostamp = bostamp;
-                            osbi.bistamp = dataSnapshotOSBI.getKey();
-                            listaOSBI.add(osbi);
-                        }
-                    }
-                }
-
-                if (snap.getKey().equals(Constantes.NODE_OSPROD)) {
-                    for (DataSnapshot snapshotOSPROD : snap.getChildren()) {
-                        String bostamp = snapshotOSPROD.getKey();
-                        for (DataSnapshot dataSnapshotOSPROD : snapshotOSPROD.getChildren()) {
-                            OSPROD osprod = dataSnapshotOSPROD.getValue(OSPROD.class);
-                            osprod.bostamp = bostamp;
-                            osprod.bistamp = dataSnapshotOSPROD.getKey();
-                            listaOSPROD.add(osprod);
-                        }
-                    }
-                }
-
-                if (snap.getKey().equals(Constantes.NODE_OSTIMER)) {
-                    for (DataSnapshot snapshotOSTimer : snap.getChildren()) {
-                        String bostamp = snapshotOSTimer.getKey();
-                        for (DataSnapshot dataSnapshotOSTIMER : snapshotOSTimer.getChildren()) {
-                            OSTIMER ostimer = dataSnapshotOSTIMER.getValue(OSTIMER.class);
-                            ostimer.bostamp = bostamp;
-                            ostimer.bistamp = dataSnapshotOSTIMER.getKey();
-                            listaOSTIMER.add(ostimer);
-                        }
-                    }
+                String bostamp = snap.getKey();
+                for (DataSnapshot dataSnapshotOSBI : snap.getChildren()) {
+                    OSBI osbi = dataSnapshotOSBI.getValue(OSBI.class);
+                    osbi.bostamp = bostamp;
+                    osbi.bistamp = dataSnapshotOSBI.getKey();
+                    listaOSBI.add(osbi);
                 }
             }
-            Log.i(TAG, "listaOSBO: " + listaOSBO.size() + ", listaOSBI: " + listaOSBI.size() + ", lista OSPROD: " + listaOSPROD.size() + ", lista OSTIMER: " + listaOSTIMER.size());
+            new DBSqlite(context).gravarListaOSBI(listaOSBI);
+            return null;
+        }
 
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            adapterOS.actualizarValoresAdapterOSBI();
+            pb_smooth.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public class TaskFirebaseOSPROD extends AsyncTask<Void, Void, Void> {
+        private final DataSnapshot snap;
+        private final ArrayList<OSPROD> listaOSPROD;
+
+        public TaskFirebaseOSPROD(DataSnapshot dataSnapshot) {
+            this.snap = dataSnapshot;
+            this.listaOSPROD = new ArrayList<>();
+            pb_smooth.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            for (DataSnapshot snapshotOSPROD : snap.getChildren()) {
+                String bostamp = snapshotOSPROD.getKey();
+                for (DataSnapshot dataSnapshotOSPROD : snapshotOSPROD.getChildren()) {
+                    OSPROD osprod = dataSnapshotOSPROD.getValue(OSPROD.class);
+                    osprod.bostamp = bostamp;
+                    osprod.bistamp = dataSnapshotOSPROD.getKey();
+                    listaOSPROD.add(osprod);
+                    Log.v(TAG, "osbostamp:  " + osprod.bostamp + ", bistamp = " + osprod.bistamp + ", qtt = " + osprod.qtt);
+                }
+            }
+            new DBSqlite(context).gravarOSPROD(listaOSPROD);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            adapterOS.actualizarValoresAdapterOSPROD(listaOSPROD);
+            pb_smooth.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private class TaskFirebaseOSTIMER extends AsyncTask<Void, Void, Void> {
+        private final ArrayList<OSTIMER> listaOSTIMER;
+        private final DataSnapshot dataSnapShot;
+
+        public TaskFirebaseOSTIMER(DataSnapshot dataSnapshot) {
+            this.listaOSTIMER = new ArrayList<>();
+            this.dataSnapShot = dataSnapshot;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            pb_smooth.setVisibility(View.VISIBLE);
+            Log.i(TAG, "TaskFirebaseOSTIMER Secção " + MrApp.getSeccao() + ", estado " + MrApp.getEstado());
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            for (DataSnapshot snapshotOSTIMER : dataSnapShot.getChildren()) {
+                String bostamp = snapshotOSTIMER.getKey();
+                for (DataSnapshot snap : snapshotOSTIMER.getChildren()) {
+                    OSTIMER ostimer = snap.getValue(OSTIMER.class);
+                    String bistamp = snap.getKey();
+                    ostimer.bostamp = bostamp;
+                    ostimer.bistamp = bistamp;
+                    if (ostimer.seccao.equals(MrApp.getSeccao())
+                            && ostimer.estado.equals(MrApp.getEstado())
+                            )
+                        listaOSTIMER.add(ostimer);
+                }
+            }
+            Log.i(TAG, "listaOSTIMER: " + listaOSTIMER.size());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            adapterOS.actualizarValoresAdapterOSTIMER(listaOSTIMER);
+            pb_smooth.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private class ActualizarQuadros extends AsyncTask<Void, Void, Void> {
+        private int totalAtrasado = 0;
+        private int totalHoje = 0;
+        private int totalAmanha = 0;
+        private int totalFuturo = 0;
+        private int totalProduzidoHoje = 0;
+        private int totalProduzidoOntem = 0;
+        private ArrayList<OSBO> listaInspeccao = new ArrayList<>();
+
+        public ActualizarQuadros() {
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            pb_smooth.setVisibility(View.VISIBLE);
+            Log.i(TAG, "Secção " + MrApp.getSeccao() + ", estado " + MrApp.getEstado());
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ArrayList<OSBI> listaOSBI = new DBSqlite(context).getListaOSBIAgrupada();
+            ArrayList<OSPROD> listaOSPROD = new DBSqlite(context).getListaOSPROD();
             for (OSBO osbo : listaOSBO) {
                 String bostamp = osbo.bostamp;
                 DateTime dataHoje = DateTime.now().withTimeAtStartOfDay();
@@ -360,7 +529,6 @@ public class PainelGlobal extends AppCompatActivity {
                     }
                 });
             }
-            adapterOS.updateSourceData(listaOSBO, listaOSBI, listaOSPROD);
 
             pb_smooth.setVisibility(View.INVISIBLE);
         }

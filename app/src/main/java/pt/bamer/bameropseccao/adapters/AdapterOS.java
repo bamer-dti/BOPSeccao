@@ -30,34 +30,27 @@ import pt.bamer.bameropseccao.database.DBSqlite;
 import pt.bamer.bameropseccao.objectos.OSBI;
 import pt.bamer.bameropseccao.objectos.OSBO;
 import pt.bamer.bameropseccao.objectos.OSPROD;
+import pt.bamer.bameropseccao.objectos.OSTIMER;
 import pt.bamer.bameropseccao.utils.Constantes;
 import pt.bamer.bameropseccao.utils.Funcoes;
-
 
 public class AdapterOS extends RecyclerView.Adapter {
     private static final String TAG = AdapterOS.class.getSimpleName();
 
     private final Context context;
     private List<OSBO> listaOSBO;
-    private List<OSBI> listaOSBI;
-    private List<OSPROD> listaOSPROD;
 
     public AdapterOS(final Context context) {
         this.context = context;
         listaOSBO = new ArrayList<>();
-        listaOSBI = new ArrayList<>();
-        listaOSPROD = new ArrayList<>();
     }
 
-    public void updateSourceData(final List<OSBO> lOSBO, final List<OSBI> lOSBI, final List<OSPROD> lOSPROD) {
+    public void actualizarValoresAdapter(final List<OSBO> lOSBO, final List<OSBI> lOSBI, final List<OSPROD> lOSPROD) {
         ((PainelGlobal) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 ordered(lOSBO);
                 listaOSBO = lOSBO;
-                listaOSBI = lOSBI;
-                listaOSPROD = lOSPROD;
-
                 Log.v(TAG, "AdapterOS tem " + listaOSBO.size() + " linhas!");
                 notifyDataSetChanged();
             }
@@ -100,7 +93,7 @@ public class AdapterOS extends RecyclerView.Adapter {
 
         OSBO osbo = listaOSBO.get(position);
         viewHolder.tv_fref.setText(osbo.fref + " - " + osbo.nmfref);
-        viewHolder.tv_obrano.setText("OS " + osbo.obrano + " (" + osbo.ordem + ")");
+        viewHolder.tv_obrano.setText("OS " + osbo.obrano + " (" + osbo.ordem + ") ");
         viewHolder.tv_descricao.setText(osbo.obs);
 
 
@@ -128,6 +121,52 @@ public class AdapterOS extends RecyclerView.Adapter {
                 context.startActivity(intent);
             }
         });
+    }
+
+    public void updateSourceDataOSBO(final ArrayList<OSBO> lista) {
+        ((PainelGlobal) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ordered(lista);
+                listaOSBO = lista;
+                Log.v(TAG, "AdapterOS tem " + listaOSBO.size() + " linhas!");
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    public void actualizarValoresAdapterOSPROD(ArrayList<OSPROD> listaOSPROD) {
+        for (OSPROD osprod : listaOSPROD) {
+            for (int i = 0; i < listaOSBO.size(); i++) {
+                OSBO osbo = listaOSBO.get(i);
+                if (osbo.bostamp.equals(osprod.bostamp)) {
+                    notifyItemChanged(i);
+                }
+            }
+        }
+    }
+
+    public void actualizarValoresAdapterOSBI() {
+        ArrayList<OSBI> lista = new DBSqlite(context).getListaOSBIAgrupada();
+        for (OSBI osbi : lista) {
+            for (int i = 0; i < listaOSBO.size(); i++) {
+                OSBO osbo = listaOSBO.get(i);
+                if (osbo.bostamp.equals(osbi.bostamp)) {
+                    notifyItemChanged(i);
+                }
+            }
+        }
+    }
+
+    public void actualizarValoresAdapterOSTIMER(ArrayList<OSTIMER> listaOSTIMER) {
+        for (OSTIMER ostimer : listaOSTIMER) {
+            for (int i = 0; i < listaOSBO.size(); i++) {
+                OSBO osbo = listaOSBO.get(i);
+                if (osbo.bostamp.equals(ostimer.bostamp)) {
+                    notifyItemChanged(i);
+                }
+            }
+        }
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {
@@ -243,20 +282,8 @@ public class AdapterOS extends RecyclerView.Adapter {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            qttProd = 0;
-            for (OSPROD osprod : listaOSPROD) {
-                if (osprod.bostamp.equals(bostamp)) {
-                    qttProd += osprod.qtt;
-                }
-            }
-
-            qtt = 0;
-            for (OSBI osbi : listaOSBI) {
-                if (osbi.bostamp.equals(bostamp)) {
-                    qtt += osbi.qtt;
-                }
-            }
-
+            qttProd = new DBSqlite(context).getQtdProdBostamp(bostamp);
+            qtt = new DBSqlite(context).getQtdBostamp(bostamp);
             return null;
         }
 

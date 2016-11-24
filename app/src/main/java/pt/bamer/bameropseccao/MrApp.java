@@ -2,7 +2,10 @@ package pt.bamer.bameropseccao;
 
 import android.app.Application;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 
@@ -61,5 +64,16 @@ public class MrApp extends Application {
             }
         }
         return lista;
+    }
+
+    public static String getTituloBase(Context context) {
+        String versao = context.getString(R.string.app_name);
+        try {
+            PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            versao += " " + pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return versao;
     }
 }

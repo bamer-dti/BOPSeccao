@@ -39,11 +39,13 @@ public class Entrada extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrada);
 
+        setTitle(MrApp.getTituloBase(this));
+
         final Spinner spinn_seccao = (Spinner) findViewById(R.id.spinn_seccao);
         final SharedPreferences prefs = MrApp.getPrefs();
         final String[] seccao = {prefs.getString(Constantes.PREF_SECCAO, ValoresDefeito.SECCAO)};
 
-tbl = (TableLayout) findViewById(R.id.tbl);
+        tbl = (TableLayout) findViewById(R.id.tbl);
         tbl.setVisibility(View.GONE);
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(Constantes.NODE_SECCAO);
@@ -52,15 +54,19 @@ tbl = (TableLayout) findViewById(R.id.tbl);
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<Machina> listaMachinas = new ArrayList<>();
                 ArrayList<String> listaSeccao = new ArrayList<>();
-                for (DataSnapshot snap1 : dataSnapshot.getChildren()) {
-                    String secc = snap1.getKey();
+                for (DataSnapshot snapSeccao : dataSnapshot.getChildren()) {
+                    String secc = snapSeccao.getKey();
                     listaSeccao.add(secc);
-                    for (DataSnapshot snap2 : snap1.getChildren()) {
-                        String maq = snap2.getKey();
-                        Machina machina = snap2.getValue(Machina.class);
-                        machina.seccao = secc;
-                        machina.codigo = maq;
-                        listaMachinas.add(machina);
+                    for (DataSnapshot snapMaqOper : snapSeccao.getChildren()) {
+                        if(snapMaqOper.getKey().equals(Constantes.NODE_MACHINAS)) {
+                            for(DataSnapshot snapMachinas : snapMaqOper.getChildren()){
+                                String maq = snapMachinas.getKey();
+                                Machina machina = snapMachinas.getValue(Machina.class);
+                                machina.seccao = secc;
+                                machina.ref = maq;
+                                listaMachinas.add(machina);
+                            }
+                        }
                     }
                 }
 

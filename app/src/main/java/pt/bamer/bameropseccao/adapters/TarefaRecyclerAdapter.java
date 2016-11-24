@@ -73,8 +73,8 @@ public class TarefaRecyclerAdapter extends RecyclerView.Adapter {
         return lista != null ? lista.size() : 0;
     }
 
-    public void populate(ArrayList<OSBI> listaOSBI) {
-        lista = new DBSqlite(activityDossier).gravarLista(listaOSBI);
+    public void populate(String bostamp) {
+        lista = new DBSqlite(activityDossier).getListaOSBIAgrupada(bostamp);
         notifyDataSetChanged();
     }
 

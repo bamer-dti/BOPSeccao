@@ -93,7 +93,7 @@ public class Cartao_Machina extends CardView {
                 final long unixNow = System.currentTimeMillis() / 1000L;
                 final long intervaloTempo = unixNow - tempoUnix;
                 final String textoIntervaloTempo = "" + Funcoes.milisegundos_em_HH_MM_SS(intervaloTempo * 1000);
-                Log.v("CRONOGRAFO", machina.codigo + "-> ** " + textoIntervaloTempo);
+                Log.v("CRONOGRAFO", machina.ref + "-> ** " + textoIntervaloTempo);
                 painelGlobalActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

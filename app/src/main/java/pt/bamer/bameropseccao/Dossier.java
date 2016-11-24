@@ -78,7 +78,7 @@ public class Dossier extends AppCompatActivity {
                     osbi.bostamp = bostamp;
                     listaOSBI.add(osbi);
                 }
-                adapterTarefaRecyclerAdapter.populate(listaOSBI);
+                adapterTarefaRecyclerAdapter.populate(bostamp);
             }
 
             @Override
