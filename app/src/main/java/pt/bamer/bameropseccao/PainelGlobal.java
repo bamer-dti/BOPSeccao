@@ -47,11 +47,13 @@ public class PainelGlobal extends AppCompatActivity {
     private SmoothProgressBar pb_smooth;
     private PieHoje pieQtdsHoje;
     private HTextView htv_qtt_antes;
-    private HTextView htv_qtt_amanha;
-    private HTextView htv_inspeccao_numero;
-    private HTextView htv_qtt_futuro;
-    private AdapterOS adapterOS;
     private HTextView htv_qtt_antes_produzido;
+    private HTextView htv_qtt_amanha;
+    private HTextView htv_qtt_amanha_produzido;
+    private HTextView htv_qtt_futuro;
+    private HTextView htv_qtt_futuro_produzido;
+    private HTextView htv_inspeccao_numero;
+    private AdapterOS adapterOS;
     private Context context = this;
     private ArrayList<OSBO> listaOSBO = new ArrayList<>();
 
@@ -92,7 +94,11 @@ public class PainelGlobal extends AppCompatActivity {
         recycler_os.setItemAnimator(itemAnimator);
 
         htv_qtt_futuro = (HTextView) findViewById(R.id.htv_qtt_futuro);
+        htv_qtt_futuro_produzido = (HTextView) findViewById(R.id.htv_qtt_futuro_produzido);
+
         htv_qtt_amanha = (HTextView) findViewById(R.id.htv_qtt_amanha);
+        htv_qtt_amanha_produzido = (HTextView) findViewById(R.id.htv_qtt_amanha_produzido);
+
         htv_qtt_antes = (HTextView) findViewById(R.id.htv_qtt_antes);
         htv_qtt_antes_produzido = (HTextView) findViewById(R.id.htv_qtt_antes_produzido);
 
@@ -313,7 +319,7 @@ public class PainelGlobal extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            adapterOS.actualizarValoresAdapterOSBI();
+//            adapterOS.actualizarValoresAdapterOSBI();
             pb_smooth.setVisibility(View.INVISIBLE);
         }
     }
@@ -397,8 +403,10 @@ public class PainelGlobal extends AppCompatActivity {
         private int totalHoje = 0;
         private int totalAmanha = 0;
         private int totalFuturo = 0;
-        private int totalProduzidoHoje = 0;
-        private int totalProduzidoOntem = 0;
+        private int totalAtrasadoProduzido = 0;
+        private int totalHojeProduzido = 0;
+        private int totalAmanhaProduzido;
+        private int totalFuturoProduzido = 0;
         private ArrayList<OSBO> listaInspeccao = new ArrayList<>();
 
         public ActualizarQuadros() {
@@ -453,10 +461,16 @@ public class PainelGlobal extends AppCompatActivity {
                     if (osprod.bostamp.equals(bostamp)) {
                         parcialProduzido += osprod.qtt;
                         if (dataOSBO.isEqual(dataHoje)) {
-                            totalProduzidoHoje += osprod.qtt;
+                            totalHojeProduzido += osprod.qtt;
                         }
                         if (dataOSBO.isBefore(dataHoje)) {
-                            totalProduzidoOntem += osprod.qtt;
+                            totalAtrasadoProduzido += osprod.qtt;
+                        }
+                        if (dataOSBO.isEqual(dataHoje.plusDays(1))) { //amanhã
+                            totalAmanhaProduzido += osprod.qtt;
+                        }
+                        if (dataOSBO.isAfter(dataHoje.plusDays(1))) { //amanhã
+                            totalFuturoProduzido += osprod.qtt;
                         }
                     }
                 }
@@ -485,26 +499,38 @@ public class PainelGlobal extends AppCompatActivity {
                 @Override
                 public void run() {
                     String textoAntes = htv_qtt_antes.getText().toString();
-                    String textoNovo = "" + totalAtrasado;
+                    String textoNovo = "" + (totalAtrasado - totalAtrasadoProduzido);
                     if (!textoAntes.equals(textoNovo))
-                        htv_qtt_antes.animateText("" + totalAtrasado);
+                        htv_qtt_antes.animateText(textoNovo);
 
                     textoAntes = htv_qtt_antes_produzido.getText().toString();
-                    textoNovo = "" + totalProduzidoOntem;
+                    textoNovo = totalAtrasado + "|" + totalAtrasadoProduzido;
                     if (!textoAntes.equals(textoNovo))
-                        htv_qtt_antes_produzido.animateText(textoNovo.equals("0") ? "" : textoNovo);
+                        htv_qtt_antes_produzido.animateText(textoNovo);
 
                     textoAntes = htv_qtt_amanha.getText().toString();
-                    textoNovo = "" + totalAmanha;
+                    textoNovo = "" + (totalAmanha - totalAmanhaProduzido);
                     if (!textoAntes.equals(textoNovo))
                         htv_qtt_amanha.animateText(textoNovo);
 
-                    textoAntes = htv_qtt_futuro.getText().toString();
-                    textoNovo = "" + totalFuturo;
+                    textoAntes = htv_qtt_amanha_produzido.getText().toString();
+                    textoNovo = totalAmanha + "|" + totalAmanhaProduzido;
                     if (!textoAntes.equals(textoNovo))
-                        htv_qtt_futuro.animateText(textoNovo);
+                        htv_qtt_amanha_produzido.animateText(textoNovo);
 
-                    pieQtdsHoje.setData(totalProduzidoHoje, totalHoje);
+
+                    textoAntes = htv_qtt_futuro.getText().toString();
+                    textoNovo = "" + (totalFuturo - totalFuturoProduzido);
+                    if (!textoAntes.equals(textoNovo)) {
+                        htv_qtt_futuro.animateText(textoNovo);
+                    }
+
+                    textoAntes = htv_qtt_futuro_produzido.getText().toString();
+                    textoNovo = totalFuturo + "|" + totalFuturoProduzido;
+                    if (!textoAntes.equals(textoNovo))
+                        htv_qtt_futuro_produzido.animateText(textoNovo);
+
+                    pieQtdsHoje.setData(totalHojeProduzido, totalHoje);
                 }
             });
 

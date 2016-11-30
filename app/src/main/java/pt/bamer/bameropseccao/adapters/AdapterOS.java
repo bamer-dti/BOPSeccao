@@ -27,7 +27,6 @@ import pt.bamer.bameropseccao.Dossier;
 import pt.bamer.bameropseccao.PainelGlobal;
 import pt.bamer.bameropseccao.R;
 import pt.bamer.bameropseccao.database.DBSqlite;
-import pt.bamer.bameropseccao.objectos.OSBI;
 import pt.bamer.bameropseccao.objectos.OSBO;
 import pt.bamer.bameropseccao.objectos.OSPROD;
 import pt.bamer.bameropseccao.objectos.OSTIMER;
@@ -136,17 +135,17 @@ public class AdapterOS extends RecyclerView.Adapter {
         }
     }
 
-    public void actualizarValoresAdapterOSBI() {
-        ArrayList<OSBI> lista = new DBSqlite(context).getListaOSBIAgrupada();
-        for (OSBI osbi : lista) {
-            for (int i = 0; i < listaOSBO.size(); i++) {
-                OSBO osbo = listaOSBO.get(i);
-                if (osbo.bostamp.equals(osbi.bostamp)) {
-                    notifyItemChanged(i);
-                }
-            }
-        }
-    }
+//    public void actualizarValoresAdapterOSBI() {
+//        ArrayList<OSBI> lista = new DBSqlite(context).getListaOSBIAgrupada();
+//        for (OSBI osbi : lista) {
+//            for (int i = 0; i < listaOSBO.size(); i++) {
+//                OSBO osbo = listaOSBO.get(i);
+//                if (osbo.bostamp.equals(osbi.bostamp)) {
+//                    notifyItemChanged(i);
+//                }
+//            }
+//        }
+//    }
 
     public void actualizarValoresAdapterOSTIMER(ArrayList<OSTIMER> listaOSTIMER) {
         for (OSTIMER ostimer : listaOSTIMER) {
@@ -157,6 +156,16 @@ public class AdapterOS extends RecyclerView.Adapter {
                 }
             }
         }
+    }
+
+    @SuppressWarnings("unused")
+    public OSBO getItem(int posicao) {
+        return listaOSBO.get(posicao);
+    }
+
+    @Override
+    public int getItemCount() {
+        return listaOSBO == null ? 0 : listaOSBO.size();
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {
@@ -184,16 +193,6 @@ public class AdapterOS extends RecyclerView.Adapter {
             tv_temporal = (TextView) view.findViewById(R.id.tv_temporal);
             llclick = (LinearLayout) view.findViewById(R.id.llclick);
         }
-    }
-
-    @SuppressWarnings("unused")
-    public OSBO getItem(int posicao) {
-        return listaOSBO.get(posicao);
-    }
-
-    @Override
-    public int getItemCount() {
-        return listaOSBO == null ? 0 : listaOSBO.size();
     }
 
     private class TaskCalcularTempo extends AsyncTask<Void, Void, Void> {

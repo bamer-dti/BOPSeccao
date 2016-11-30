@@ -10,10 +10,12 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0.1"
+
+        multiDexEnabled true
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -73,6 +75,8 @@ dependencies {
 
     compile 'com.google.firebase:firebase-database:9.6.1'
     compile 'com.firebaseui:firebase-ui-database:1.0.0'
+
+    compile 'com.android.support:multidex:1.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

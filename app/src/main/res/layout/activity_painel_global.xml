@@ -156,7 +156,7 @@
                                 android:background="#ffffff"
                                 android:gravity="center"
                                 android:text=""
-                                android:textColor="@color/md_green_800"
+                                android:textColor="@color/md_grey_400"
                                 android:textSize="@dimen/tamanho_fonte_numero_cartao_qtd_produzida"
                                 android:textStyle="bold"
                                 htext:animateType="anvil" />
@@ -194,12 +194,13 @@
                                 htext:animateType="line" />
 
                             <com.hanks.htextview.HTextView
+                                android:id="@+id/htv_qtt_amanha_produzido"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="#ffffff"
                                 android:gravity="center"
                                 android:text=""
-                                android:textColor="@color/md_red_300"
+                                android:textColor="@color/md_grey_400"
                                 android:textSize="@dimen/tamanho_fonte_numero_cartao_qtd_produzida"
                                 android:textStyle="bold"
                                 htext:animateType="anvil" />
@@ -232,12 +233,13 @@
                                 htext:animateType="line" />
 
                             <com.hanks.htextview.HTextView
+                                android:id="@+id/htv_qtt_futuro_produzido"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="#ffffff"
                                 android:gravity="center"
                                 android:text=""
-                                android:textColor="@color/md_red_300"
+                                android:textColor="@color/md_grey_400"
                                 android:textSize="@dimen/tamanho_fonte_numero_cartao_qtd_produzida"
                                 android:textStyle="bold"
                                 htext:animateType="anvil" />
