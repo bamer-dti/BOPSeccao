@@ -319,7 +319,6 @@ public class PainelGlobal extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-//            adapterOS.actualizarValoresAdapterOSBI();
             pb_smooth.setVisibility(View.INVISIBLE);
         }
     }

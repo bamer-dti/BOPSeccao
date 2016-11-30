@@ -135,18 +135,6 @@ public class AdapterOS extends RecyclerView.Adapter {
         }
     }
 
-//    public void actualizarValoresAdapterOSBI() {
-//        ArrayList<OSBI> lista = new DBSqlite(context).getListaOSBIAgrupada();
-//        for (OSBI osbi : lista) {
-//            for (int i = 0; i < listaOSBO.size(); i++) {
-//                OSBO osbo = listaOSBO.get(i);
-//                if (osbo.bostamp.equals(osbi.bostamp)) {
-//                    notifyItemChanged(i);
-//                }
-//            }
-//        }
-//    }
-
     public void actualizarValoresAdapterOSTIMER(ArrayList<OSTIMER> listaOSTIMER) {
         for (OSTIMER ostimer : listaOSTIMER) {
             for (int i = 0; i < listaOSBO.size(); i++) {
